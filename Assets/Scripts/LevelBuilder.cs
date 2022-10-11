@@ -20,6 +20,7 @@ public class LevelBuilder : MonoBehaviour
     public float[] HexMovement = { 3.9f, 4.5f };
     public int BombChance = 25;
     public int CoinChance = 5;
+    public List<Item> Items = new List<Item>();
 
     [HideInInspector]
     public List<float[]> PositionCalc = new List<float[]> {
@@ -32,13 +33,8 @@ public class LevelBuilder : MonoBehaviour
     };
 
     private List<Vector2> Rooms = new List<Vector2> {new Vector2(0,0)};
-    private List<int> Bombs = new List<int>();
-    private List<int> Coins = new List<int>();
-
-    private List<Item> Items = new List<Item>
-    {
-        new Item("Torch")
-    };
+    private List<int> BombRooms = new List<int>();
+    private List<int> ItemRooms = new List<int>();
 
     private int CurrentRoomID = 1;
     private int TotalCoins = 0;
@@ -79,15 +75,15 @@ public class LevelBuilder : MonoBehaviour
         GameObject RoomObject = GameObject.Find("Room" + CurrentRoom);
         RoomObject.transform.Find("Canvas").Find("Marker").gameObject.SetActive(false);
 
-        if (Bombs.Contains(CurrentRoom))
+        if (BombRooms.Contains(CurrentRoom))
         {
             EndGame();
             Alert("BOOM");
             Dead = true;
         }
-        else if (Coins.Contains(CurrentRoom))
+        else if (ItemRooms.Contains(CurrentRoom))
         {
-            Coins.RemoveAt(Coins.IndexOf(CurrentRoom));
+            ItemRooms.RemoveAt(ItemRooms.IndexOf(CurrentRoom));
             TotalCoins++;
             CoinCounter.GetComponent<TextMeshProUGUI>().text = "Coins: " + TotalCoins;
             Alert("Found a coin!");
@@ -112,13 +108,13 @@ public class LevelBuilder : MonoBehaviour
                     {
                         NewBombs++;
                         BombsFound++;
-                        Bombs.Add(CurrentRoomID);
+                        BombRooms.Add(CurrentRoomID);
                         //NewRoom.GetComponent<SpriteRenderer>().material.color = new Color(255, 0, 0);
                         print("Bomb Added: " + CurrentRoomID);
                     }
                     else if (Random.Range(0,100) > (100 - CoinChance))
                     {
-                        Coins.Add(CurrentRoomID);
+                        ItemRooms.Add(CurrentRoomID);
                         //NewRoom.GetComponent<SpriteRenderer>().material.color = new Color(0,255,0);
                     }
 
@@ -129,7 +125,7 @@ public class LevelBuilder : MonoBehaviour
                     int ExistingRoom = Rooms.IndexOf(NewRoomPosition);
 
                     print("Checking: " + ExistingRoom + " ---- At: " + NewRoomPosition);
-                    if (Bombs.Contains(ExistingRoom))
+                    if (BombRooms.Contains(ExistingRoom))
                     {
                         print("Found: " + ExistingRoom);
                         BombsFound++;
@@ -175,10 +171,12 @@ public class LevelBuilder : MonoBehaviour
 public class Item
 {
     public string Name;
+    public int Chance;
     public Sprite Image;
-    public Item(string InName, Sprite InImage)
+    public Item(string name, int chance, Sprite image)
     {
-        Name = InName;
-        Image = InImage;
+        Name = name;
+        Chance = chance;
+        Image = image;
     }
 }

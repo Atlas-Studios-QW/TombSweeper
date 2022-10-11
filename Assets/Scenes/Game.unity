@@ -324,7 +324,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.55
+  m_fontSize: 67.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -854,7 +854,7 @@ MonoBehaviour:
   HexMovement:
   - 3.9
   - 4.5
-  BombChance: 25
+  BombChance: 20
   CoinChance: 5
 --- !u!114 &1395125436
 MonoBehaviour:

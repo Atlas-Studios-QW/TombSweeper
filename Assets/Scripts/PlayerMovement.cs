@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Player.transform.position == NextPosition)
         {
-            GetComponent<LevelBuilder>().LoadNewRooms(1);
+            GetComponent<LevelBuilder>().LoadNewRooms();
         }
 
         CanMove = true;
