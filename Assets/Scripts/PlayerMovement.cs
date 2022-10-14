@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private GameObject Player;
+    private GameObject PausePanel;
+    private GameObject DeathPanel;
     private float[] HexMovement;
     private List<float[]> PositionCalc;
     private bool CanMove = true;
@@ -12,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         Player = GetComponent<LevelBuilder>().Player;
+        PausePanel = GetComponent<LevelBuilder>().PausePanel;
+        DeathPanel = GetComponent<LevelBuilder>().DeathPanel;
         HexMovement = GetComponent<LevelBuilder>().HexMovement;
         PositionCalc = GetComponent<LevelBuilder>().PositionCalc;
     }
@@ -28,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void MovePlayer(int DirectionInput)
     {
-        if (CanMove)
+        if (CanMove && !PausePanel.activeSelf && !DeathPanel.activeSelf)
         {
             CanMove = false;
             StartCoroutine(Mover(DirectionInput));
@@ -41,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
         while (Player.transform.position != NextPosition)
         {
-            Player.transform.position = Vector3.MoveTowards(Player.transform.position, NextPosition, 0.3f);
+            Player.transform.position = Vector3.MoveTowards(Player.transform.position, NextPosition, Time.deltaTime * 10);
             yield return null;
         }
 
