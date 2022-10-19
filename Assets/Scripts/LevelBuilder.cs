@@ -296,12 +296,6 @@ public class LevelBuilder : MonoBehaviour
 
                     CurrentHexID++;
 
-                    if (GameObject.Find("Hexagon" + (CurrentHexID - MaxHex)))
-                    {
-                        Hexagons.Remove(GameObject.Find("Hexagon" + (CurrentHexID - MaxHex)).transform.position);
-                        Destroy(GameObject.Find("Hexagon" + (CurrentHexID - MaxHex)));
-                    }
-
                 }
                 else
                 {
