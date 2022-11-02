@@ -7,21 +7,6 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 
-[System.Serializable]
-public class Item
-{
-    public string name;
-    public string description;
-    public Sprite icon;
-
-    public Item(string Name, string Description, Sprite Icon)
-    {
-        name = Name;
-        description = Description;
-        icon = Icon;
-    }
-}
-
 public class LevelBuilder : MonoBehaviour
 {
     [Header("-----Prefabs")]
@@ -52,15 +37,26 @@ public class LevelBuilder : MonoBehaviour
 
     [Header("-----Settings")]
     public int BombChance = 25;
-    public int CoinChance = 5;
-    public int ItemChance = 1;
-    public int MaxHex = 50;
+    public int CoinChance = 8;
+    public int ItemChance = 4;
 
     [Header("-----Dev settings")]
     public bool EnableBombSight = false;
     public float[] HexMovement = { 3.9f, 4.5f };
 
     [HideInInspector]
+    public List<Room> Rooms = new List<Room> { new Room(new Vector2(0,0), ContainState.Empty, 0) };
+    public List<Vector2> KeyHex = new List<Vector2>();
+    public List<Item> CollectedItems = new List<Item>();
+    public int CurrentMove = 0;
+    public int CurrentHexID = 1;
+    public int TotalCoins = 0;
+    public int CounterFixObjective = 0;
+    public int ItemTotal = 0;
+    public int KeyTotal = 0;
+    public bool EnableSight = false;
+    public bool HasCompass = false;
+    public Vector2 PlayerPos;
     public List<float[]> PositionCalc = new List<float[]> {
         new float[] {0.0f, 1.0f},
         new float[] {1.0f, 0.5f},
@@ -69,24 +65,6 @@ public class LevelBuilder : MonoBehaviour
         new float[] {-1.0f, -0.5f},
         new float[] {-1.0f, 0.5f}
     };
-
-    private List<Vector2> Hexagons = new List<Vector2> {new Vector2(0,0)};
-    private List<int> BombHex = new List<int>();
-    private List<int> CoinHex = new List<int>();
-    private List<int> ItemHex = new List<int>();
-    private List<int> KeyHexID = new List<int>();
-    private List<Vector2> KeyHex = new List<Vector2>(); 
-
-    private List<Item> CollectedItems = new List<Item>();
-
-    private int CurrentMove = 0;
-    private int CurrentHexID = 1;
-    private int TotalCoins = 0;
-    private int CounterFixObjective = 0;
-    private int ItemTotal = 0;
-    private int KeyTotal = 0;
-    private bool EnableSight = false;
-    private bool HasCompass = false;
 
     private void Start()
     {
@@ -97,7 +75,7 @@ public class LevelBuilder : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !DeathPanel.activeInHierarchy)
         {
             PausePanel.SetActive(!PausePanel.activeSelf);
         }
@@ -142,9 +120,9 @@ public class LevelBuilder : MonoBehaviour
 
     public void LoadNewHex()
     {
-        Vector2 PlayerPos = Player.transform.position;
-        
-        int CurrentHex = 0;
+        PlayerPos = Player.transform.position;
+
+        Room CurrentRoom = null;
         bool Dead = false;
 
         if (HasCompass && CurrentMove % 3 == 0)
@@ -152,36 +130,43 @@ public class LevelBuilder : MonoBehaviour
             StartCoroutine(CompassBlink());
         }
 
-        if (Hexagons.IndexOf(PlayerPos) == -1)
+            
+        foreach (Room Room in Rooms)   
+        {    
+            if (Room.location == PlayerPos)
+            {
+                CurrentRoom = Room;   
+            }    
+        }
+            
+        
+        if (CurrentRoom == null)
         {
             float MinDistance = Mathf.Infinity;
-            foreach (Vector2 Hexagon in Hexagons)
+            foreach (Room Room in Rooms)
             {
-                float Distance = Vector2.Distance(Hexagon, PlayerPos);
+                float Distance = Vector2.Distance(Room.location, PlayerPos);
                 if (Distance < MinDistance)
                 {
                     MinDistance = Distance;
-                    CurrentHex = Hexagons.IndexOf(Hexagon);
+                    CurrentRoom = Room;
+                    //print("Dist: " + Distance);
                 }
             }
         }
-        else
-        {
-            CurrentHex = Hexagons.IndexOf(PlayerPos);
-        }
 
-        GameObject HexObject = GameObject.Find("Hexagon" + CurrentHex);
+        GameObject HexObject = GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom));
         HexObject.transform.Find("Canvas").Find("Marker").gameObject.SetActive(false);
 
-        if (BombHex.Contains(CurrentHex))
+        if (CurrentRoom.contains == ContainState.Bomb)
         {
             EndGame();
             Dead = true;
         }
-        else if (KeyHexID.Contains(CurrentHex))
+        else if (CurrentRoom.contains == ContainState.Key)
         {
-            GameObject.Find("Hexagon" + CurrentHex).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
-            KeyHexID.RemoveAt(KeyHexID.IndexOf(CurrentHex));
+            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            CurrentRoom.contains = ContainState.Empty;
             KeyTotal++;
             if (KeyTotal == 3)
             {
@@ -192,19 +177,20 @@ public class LevelBuilder : MonoBehaviour
                 Alert($"Objective:\nFind the key pieces [{KeyTotal}/3]");
             }
         }
-        else if (CoinHex.Contains(CurrentHex))
+        else if (CurrentRoom.contains == ContainState.Coin)
         {
-            GameObject.Find("Hexagon" + CurrentHex).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0,0,0,0);
-            CoinHex.RemoveAt(CoinHex.IndexOf(CurrentHex));
+            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0,0,0,0);
+            CurrentRoom.contains = ContainState.Empty;
             TotalCoins++;
             Alert("Coin");
         }
-        else if (ItemHex.Contains(CurrentHex))
+        else if (CurrentRoom.contains == ContainState.Item)
         {
-            GameObject.Find("Hexagon" + CurrentHex).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
-            ItemHex.RemoveAt(ItemHex.IndexOf(CurrentHex));
+            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            CurrentRoom.contains = ContainState.Empty;
             if (ItemTotal < 3)
             {
+                print(ItemTotal);
                 CollectedItems.Add(Items[ItemTotal]);
                 Alert("Item");
                 Alert("You collected an item!");
@@ -233,11 +219,20 @@ public class LevelBuilder : MonoBehaviour
             foreach (float[] PosChange in PositionCalc)
             {
                 Vector2 NewHexPosition = new Vector2(Mathf.Round((PlayerPos.x + (PosChange[0] * HexMovement[0])) * 100) / 100, Mathf.Round((PlayerPos.y + (PosChange[1] * HexMovement[1])) * 100) / 100);
+                Room NewRoom = new Room(NewHexPosition, ContainState.Empty, 0);
 
-                if (!Hexagons.Contains(NewHexPosition))
+                foreach (Room Room in Rooms)
+                {
+                    if (Room.location == NewHexPosition)
+                    {
+                        NewRoom = null;
+                    }
+                }
+
+                if (NewRoom != null)
                 {
                     GameObject NewHex = Instantiate(Hexagon, NewHexPosition, new Quaternion(0,0,0,0), HexParent.transform);
-                    Hexagons.Add(NewHexPosition);
+                    Rooms.Add(NewRoom);
                     NewHex.name = "Hexagon" + CurrentHexID;
 
                     bool SpawnBomb = false;
@@ -263,13 +258,13 @@ public class LevelBuilder : MonoBehaviour
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = KeyImg;
                         }
-                        KeyHexID.Add(CurrentHexID);
+                        NewRoom.contains = ContainState.Key;
                     }
                     else if (SpawnBomb && BombsFound != 3)
                     {
                         NewBombs++;
                         BombsFound++;
-                        BombHex.Add(CurrentHexID);
+                        NewRoom.contains = ContainState.Bomb;
                         if (EnableBombSight)
                         {
                             NewHex.GetComponent<SpriteRenderer>().material.color = new Color(255, 0, 0);
@@ -277,16 +272,16 @@ public class LevelBuilder : MonoBehaviour
                     }
                     else if (Random.Range(0,100) > (100 - CoinChance))
                     {
-                        CoinHex.Add(CurrentHexID);
+                        NewRoom.contains = ContainState.Coin;
                         if (EnableSight)
                         {
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = CoinImg;
                         }
                     }
-                    else if (Random.Range(0, 100) > (100 - ItemChance) && ItemTotal < 3)
+                    else if (Random.Range(0, 100) > (100 - ItemChance) && ItemTotal < 3 && CurrentMove > ItemTotal * 10 + 10)
                     {
-                        ItemHex.Add(CurrentHexID);
+                        NewRoom.contains = ContainState.Item;
                         if (EnableSight)
                         {
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
@@ -296,20 +291,23 @@ public class LevelBuilder : MonoBehaviour
 
                     CurrentHexID++;
 
+                    NewRoom.BombsFound = BombsFound;
+
                 }
                 else
                 {
-                    int ExistingHex = Hexagons.IndexOf(NewHexPosition);
-
-                    if (BombHex.Contains(ExistingHex))
-                    {
-                        BombsFound++;
+                    foreach (Room Room in Rooms) { 
+                        if (Room.location == NewHexPosition && Room.contains == ContainState.Bomb) 
+                        {
+                            BombsFound++;
+                        }
                     }
                 }
             }
 
-            GameObject.Find("Hexagon" + CurrentHex).transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = BombsFound.ToString();
-
+            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = BombsFound.ToString();
+            //print(Rooms.Count);
+            //print(CurrentRoom.location);
         }
 
         CurrentMove++;
