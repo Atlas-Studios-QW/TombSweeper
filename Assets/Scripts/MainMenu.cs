@@ -50,9 +50,9 @@ public class MainMenu : MonoBehaviour
 
     public void ChooseOption()
     {
-        if (CurrentPos == 1) { SceneManager.LoadScene("Game"); }
-        if (CurrentPos == 2) { SceneManager.LoadScene("Game"); }
-        if (CurrentPos == 6) { SceneManager.LoadScene("Game"); }
+        if (CurrentPos == 1 && PlayerPrefs.HasKey("LatestSaveGame")) { SceneManager.LoadScene("Game"); }
+        if (CurrentPos == 2) { PlayerPrefs.SetInt("LatestSaveGame", 1); SceneManager.LoadScene("Game"); }
+        if (CurrentPos == 6) { PlayerPrefs.SetInt("LatestSaveGame", 4); SceneManager.LoadScene("Game"); }
         if (CurrentPos == 3) { SceneManager.LoadScene("Settings"); }
         if (CurrentPos == 4) { Application.Quit(); }
     }
@@ -75,16 +75,19 @@ public class MainMenu : MonoBehaviour
             if (CurrentPos != 0)
             {
                 CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
 
                 while (CurrentLabel.color.a > 0.1f)
                 {
                     CurrentLabel.color -= new Color(0, 0, 0, 8 * Time.deltaTime);
+                    SelectHint.color -= new Color(255, 255, 255, 8 * Time.deltaTime);
                     yield return null;
                 }
 
                 if (CurrentLabel.color.a < 0.1f)
                 {
                     CurrentLabel.color = new Color(255, 255, 255, 0.1f);
+                    SelectHint.color = new Color(255, 255, 255, 0);
                 }
 
             }
@@ -119,10 +122,12 @@ public class MainMenu : MonoBehaviour
             if (CurrentPos != 0)
             {
                 CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
             
                 while (CurrentLabel.color.a < 1)
                 {
                     CurrentLabel.color += new Color(255, 255, 255, 8 * Time.deltaTime);
+                    SelectHint.color += new Color(255, 255, 255, 8 * Time.deltaTime);
                     yield return null;
                 }
             }

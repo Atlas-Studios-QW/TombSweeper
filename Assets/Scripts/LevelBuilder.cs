@@ -45,7 +45,7 @@ public class LevelBuilder : MonoBehaviour
     public float[] HexMovement = { 3.9f, 4.5f };
 
     [HideInInspector]
-    public List<Room> Rooms = new List<Room> { new Room(new Vector2(0,0), ContainState.Empty, 0) };
+    public List<Room> Rooms = new List<Room> { new Room(new Vector2(0,0), ContainState.Empty, 0, true) };
     public List<Vector2> KeyHex = new List<Vector2>();
     public List<Item> CollectedItems = new List<Item>();
     public int CurrentMove = 0;
@@ -68,6 +68,14 @@ public class LevelBuilder : MonoBehaviour
 
     private void Start()
     {
+        if (PlayerPrefs.GetInt("LatestSaveGame") > 3)
+        {
+            PlayerPrefs.SetInt("LatestSaveGame", PlayerPrefs.GetInt("LatestSaveGame") - 3);
+        }
+        else
+        {
+            GetComponent<SavegameSystem>().LoadGame();
+        }
         LoadNewHex();
         ChoosePositions();
         Alert("Objective:\nFind the key pieces [0/3]");
@@ -155,6 +163,8 @@ public class LevelBuilder : MonoBehaviour
             }
         }
 
+
+        CurrentRoom.Entered = true;
         GameObject HexObject = GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom));
         HexObject.transform.Find("Canvas").Find("Marker").gameObject.SetActive(false);
 
@@ -190,7 +200,6 @@ public class LevelBuilder : MonoBehaviour
             CurrentRoom.contains = ContainState.Empty;
             if (ItemTotal < 3)
             {
-                print(ItemTotal);
                 CollectedItems.Add(Items[ItemTotal]);
                 Alert("Item");
                 Alert("You collected an item!");
@@ -219,7 +228,7 @@ public class LevelBuilder : MonoBehaviour
             foreach (float[] PosChange in PositionCalc)
             {
                 Vector2 NewHexPosition = new Vector2(Mathf.Round((PlayerPos.x + (PosChange[0] * HexMovement[0])) * 100) / 100, Mathf.Round((PlayerPos.y + (PosChange[1] * HexMovement[1])) * 100) / 100);
-                Room NewRoom = new Room(NewHexPosition, ContainState.Empty, 0);
+                Room NewRoom = new Room(NewHexPosition, ContainState.Empty, 0, false);
 
                 foreach (Room Room in Rooms)
                 {
