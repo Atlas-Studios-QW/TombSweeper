@@ -1888,6 +1888,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7871690975498740747, guid: 22a1f1c3d3a8d2d4785c7ef952d699f0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7961582532622430617, guid: 22a1f1c3d3a8d2d4785c7ef952d699f0, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7961582532622430617, guid: 22a1f1c3d3a8d2d4785c7ef952d699f0, type: 3}
+      propertyPath: m_fontSize
+      value: 140
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 22a1f1c3d3a8d2d4785c7ef952d699f0, type: 3}
@@ -2928,6 +2940,11 @@ MonoBehaviour:
   HexMovement:
   - 3.9
   - 4.5
+  Rooms:
+  - location: {x: 0, y: 0}
+    contains: 0
+    BombsFound: 0
+    Entered: 1
   KeyHex: []
   CollectedItems: []
   CurrentMove: 0
@@ -2963,8 +2980,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07ea45bdd24d0e4478e27eb1ae6a4700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HexagonParent: {fileID: 209416718}
-  ScriptHolder: {fileID: 1395125433}
 --- !u!1 &1403151217
 GameObject:
   m_ObjectHideFlags: 0

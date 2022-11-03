@@ -138,15 +138,13 @@ public class LevelBuilder : MonoBehaviour
             StartCoroutine(CompassBlink());
         }
 
-            
         foreach (Room Room in Rooms)   
         {    
             if (Room.location == PlayerPos)
             {
                 CurrentRoom = Room;   
             }    
-        }
-            
+        }            
         
         if (CurrentRoom == null)
         {

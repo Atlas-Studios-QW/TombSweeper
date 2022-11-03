@@ -11,7 +11,6 @@ public class MainMenu : MonoBehaviour
 {
     [Header("Objects")]
     public GameObject Player;
-    public List<GameObject> UITags = new List<GameObject> ();
 
     [Header("-----Dev settings")]
     public float[] HexMovement = { 3.9f, 4.5f };
@@ -24,9 +23,11 @@ public class MainMenu : MonoBehaviour
         new float[] {-1.0f, -0.5f},
         new float[] {-1.0f, 0.5f}
     };
-
+    private bool InMenu;
     private bool CanMove = true;
+    private bool LoadMenu = false;
     private int CurrentPos = 0;
+    private int CurrentSelected = 1;
     TextMeshProUGUI CurrentLabel;
     private List<Vector2> Positions = new List<Vector2> { new Vector2(0, 0) };
 
@@ -40,17 +41,21 @@ public class MainMenu : MonoBehaviour
 
     private void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) ) && CanMove) { ChooseOption(); }
-        if (Input.GetKeyDown(KeyCode.W)) { MovePlayer(0); }
-        if (Input.GetKeyDown(KeyCode.E)) { MovePlayer(1); }
-        if (Input.GetKeyDown(KeyCode.D)) { MovePlayer(2); }
-        if (Input.GetKeyDown(KeyCode.S)) { MovePlayer(3); }
-        if (Input.GetKeyDown(KeyCode.A)) { MovePlayer(4); }
-        if (Input.GetKeyDown(KeyCode.Q)) { MovePlayer(5); }
-        if (Input.GetKeyDown(KeyCode.Escape)) { StartCoroutine(ResetCamera()); }
+        if (!InMenu && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) ) && CanMove) { ChooseOption(); }
+        if (!InMenu && Input.GetKeyDown(KeyCode.W)) { MovePlayer(0); }
+        if (!InMenu && Input.GetKeyDown(KeyCode.E)) { MovePlayer(1); }
+        if (!InMenu && Input.GetKeyDown(KeyCode.D)) { MovePlayer(2); }
+        if (!InMenu && Input.GetKeyDown(KeyCode.S)) { MovePlayer(3); }
+        if (!InMenu && Input.GetKeyDown(KeyCode.A)) { MovePlayer(4); }
+        if (!InMenu && Input.GetKeyDown(KeyCode.Q)) { MovePlayer(5); }
+
+        if (InMenu && Input.GetKeyDown(KeyCode.Escape)) { StartCoroutine(ResetCamera()); }
+        if (InMenu && Input.GetKeyDown(KeyCode.W)) { StartCoroutine(SelectSave(false)); }
+        if (InMenu && Input.GetKeyDown(KeyCode.S)) { StartCoroutine(SelectSave(true)); }
+        if (InMenu && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && CanMove) { ChooseSaveGame(); }
     }
 
-    public void ChooseOption()
+    private void ChooseOption()
     {
         if (CurrentPos == 1 && PlayerPrefs.HasKey("LatestSaveGame")) { SceneManager.LoadScene("Game"); }
         if (CurrentPos == 2) { StartCoroutine(ShowSaveMenu(true)); }
@@ -59,38 +64,136 @@ public class MainMenu : MonoBehaviour
         if (CurrentPos == 4) { Application.Quit(); }
     }
 
+    private void ChooseSaveGame()
+    {
+        if (LoadMenu)
+        {
+            if (GetComponent<SavegameSystem>().CheckSavegame(CurrentSelected))
+            {
+                PlayerPrefs.SetInt("LatestSaveGame", CurrentSelected);
+                SceneManager.LoadScene("Game");
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetInt("LatestSaveGame", CurrentSelected + 3);
+            SceneManager.LoadScene("Game");
+        }
+    }
+
+    private IEnumerator SelectSave(bool Next)
+    {
+        if ((Next && CurrentSelected < 3) || (!Next && CurrentSelected > 1))
+        {
+            if (LoadMenu)
+            {
+                GameObject SaveLoad = GameObject.Find("SaveLoad");
+                Transform SelectorLoad = SaveLoad.transform.Find("Selector");
+                Transform SelectedLoad = SaveLoad.transform.Find("Label" + CurrentSelected);
+                SelectedLoad.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 0.1f);
+                if (Next)
+                {
+                    CurrentSelected++;
+                }
+                else
+                {
+                    CurrentSelected--;
+                }
+
+                SelectedLoad = SaveLoad.transform.Find("Label" + CurrentSelected);
+
+                if (Next)
+                {
+                    while (SelectorLoad.position.y > SelectedLoad.position.y)
+                    {
+                        SelectorLoad.position -= new Vector3(0, Time.deltaTime * 20, 0);
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    while (SelectorLoad.position.y < SelectedLoad.position.y)
+                    {
+                        SelectorLoad.position += new Vector3(0, Time.deltaTime * 20, 0);
+                        yield return null;
+                    }
+                }
+                SelectedLoad.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 1);
+            }
+            else
+            {
+                GameObject SaveNew = GameObject.Find("SaveNew");
+                Transform SelectorNew = SaveNew.transform.Find("Selector");
+                Transform SelectedNew = SaveNew.transform.Find("Label" + CurrentSelected);
+                SelectedNew.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 0.1f);
+                if (Next)
+                {
+                    CurrentSelected++;
+                }
+                else
+                {
+                    CurrentSelected--;
+                }
+
+                SelectedNew = SaveNew.transform.Find("Label" + CurrentSelected);
+
+                if (Next)
+                {
+                    while (SelectorNew.position.y > SelectedNew.position.y)
+                    {
+                        SelectorNew.position -= new Vector3(0, Time.deltaTime * 20, 0);
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    while (SelectorNew.position.y < SelectedNew.position.y)
+                    {
+                        SelectorNew.position += new Vector3(0, Time.deltaTime * 20, 0);
+                        yield return null;
+                    }
+                }
+                SelectedNew.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 1);
+            }
+        }
+    }
+
     private IEnumerator ShowSaveMenu(bool ExistingSaves)
     {
         GameObject Camera = GameObject.Find("Main Camera");
         if (ExistingSaves) {
             while (Camera.transform.position.x < 15)
             {
-                Camera.transform.position += new Vector3(Time.deltaTime * 10,0,0);
+                Camera.transform.position += new Vector3(Time.deltaTime * 20,0,0);
                 yield return null;
             }
+            LoadMenu = true;
         }
         else
         {
             while (Camera.transform.position.x > -15)
             {
-                Camera.transform.position -= new Vector3(Time.deltaTime * 10, 0, 0);
+                Camera.transform.position -= new Vector3(Time.deltaTime * 20, 0, 0);
                 yield return null;
             }
+            LoadMenu = false;
         }
+        InMenu = true;
     }
     private IEnumerator ResetCamera()
     {
         GameObject Camera = GameObject.Find("Main Camera");
         while (Camera.transform.position.x < 0)
         {
-            Camera.transform.position += new Vector3(Time.deltaTime * 10, 0, 0);
+            Camera.transform.position += new Vector3(Time.deltaTime * 20, 0, 0);
             yield return null;
         }
         while (Camera.transform.position.x > 0)
         {
-            Camera.transform.position -= new Vector3(Time.deltaTime * 10, 0, 0);
+            Camera.transform.position -= new Vector3(Time.deltaTime * 20, 0, 0);
             yield return null;
         }
+        InMenu = false;
     }
 
     public void MovePlayer(int DirectionInput)

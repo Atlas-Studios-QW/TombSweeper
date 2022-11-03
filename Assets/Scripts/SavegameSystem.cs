@@ -18,6 +18,21 @@ public class SavegameSystem : MonoBehaviour
         }
     }
 
+    public bool CheckSavegame(int SaveGameNumber)
+    {
+        StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
+        string fileContent = reader.ReadToEnd();
+        reader.Close();
+        if (fileContent.ToCharArray().Length > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void SaveGame()
     {
         SavegameFolder = Application.persistentDataPath + "/Savegames";
@@ -43,7 +58,7 @@ public class SavegameSystem : MonoBehaviour
         StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         string fileContent = reader.ReadToEnd();
         reader.Close();
-        fileContent = JsonUtility.ToJson(SaveGame);
+        fileContent = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(SaveGame)));
         StreamWriter writer = new StreamWriter(File.OpenWrite(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         writer.Write(fileContent);
         writer.Close();
@@ -55,7 +70,8 @@ public class SavegameSystem : MonoBehaviour
         int SaveGameNumber = PlayerPrefs.GetInt("LatestSaveGame");
         StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         string ReadJson = reader.ReadToEnd();
-        SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(ReadJson);
+        SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(ReadJson)));
+
         reader.Close();
 
         LevelBuilder Script = GetComponent<LevelBuilder>();
