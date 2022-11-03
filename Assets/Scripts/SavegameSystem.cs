@@ -61,18 +61,26 @@ public class SavegameSystem : MonoBehaviour
         LevelBuilder Script = GetComponent<LevelBuilder>();
         Script.Rooms = ReadData.rooms;
         Script.KeyHex = ReadData.keyHex;
-        Script.CollectedItems = ReadData.collectedItems;
         Script.CurrentMove = ReadData.intData[0];
         Script.CurrentHexID = ReadData.intData[1];
-        Script.TotalCoins = ReadData.intData[2];
         Script.CounterFixObjective = ReadData.intData[3];
-        Script.ItemTotal = ReadData.intData[4];
         Script.KeyTotal = ReadData.intData[5];
         Script.EnableSight = ReadData.enableSight;
         Script.HasCompass = ReadData.hasCompass;
         Script.PlayerPos = ReadData.playerPos;
 
 
+        Script.CollectedItems = ReadData.collectedItems;
+        foreach (Item Item in ReadData.collectedItems)
+        {
+            Script.Alert("Item");
+        }
+        Script.ItemTotal = ReadData.intData[4];
+
+        Script.TotalCoins = ReadData.intData[2];
+        Script.Alert("Coin");
+
+        Script.Player.transform.position = Script.PlayerPos;
 
         GameObject RoomParent = Script.HexParent;
         int RoomID = 0;
@@ -86,7 +94,8 @@ public class SavegameSystem : MonoBehaviour
                 NewRoom.name = "Hexagon" + RoomID;
                 if (Room.Entered)
                 {
-                    NewRoom.transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = Room.BombsFound.ToString();
+                    print("Test: " + Room.BombsFound);
+                    NewRoom.transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = "" + Room.BombsFound;
                     NewRoom.transform.Find("Canvas").Find("Marker").gameObject.SetActive(false);
                 }
             }

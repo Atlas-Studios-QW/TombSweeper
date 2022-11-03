@@ -78,7 +78,7 @@ public class LevelBuilder : MonoBehaviour
         }
         LoadNewHex();
         ChoosePositions();
-        Alert("Objective:\nFind the key pieces [0/3]");
+        Alert($"Objective:\nFind the key pieces [{KeyTotal}/3]");
     }
 
     private void Update()
@@ -300,8 +300,6 @@ public class LevelBuilder : MonoBehaviour
 
                     CurrentHexID++;
 
-                    NewRoom.BombsFound = BombsFound;
-
                 }
                 else
                 {
@@ -314,6 +312,7 @@ public class LevelBuilder : MonoBehaviour
                 }
             }
 
+            CurrentRoom.BombsFound = BombsFound;
             GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = BombsFound.ToString();
             //print(Rooms.Count);
             //print(CurrentRoom.location);

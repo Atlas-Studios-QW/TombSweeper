@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -46,15 +47,50 @@ public class MainMenu : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S)) { MovePlayer(3); }
         if (Input.GetKeyDown(KeyCode.A)) { MovePlayer(4); }
         if (Input.GetKeyDown(KeyCode.Q)) { MovePlayer(5); }
+        if (Input.GetKeyDown(KeyCode.Escape)) { StartCoroutine(ResetCamera()); }
     }
 
     public void ChooseOption()
     {
         if (CurrentPos == 1 && PlayerPrefs.HasKey("LatestSaveGame")) { SceneManager.LoadScene("Game"); }
-        if (CurrentPos == 2) { PlayerPrefs.SetInt("LatestSaveGame", 1); SceneManager.LoadScene("Game"); }
-        if (CurrentPos == 6) { PlayerPrefs.SetInt("LatestSaveGame", 4); SceneManager.LoadScene("Game"); }
+        if (CurrentPos == 2) { StartCoroutine(ShowSaveMenu(true)); }
+        if (CurrentPos == 6) { StartCoroutine(ShowSaveMenu(false)); }
         if (CurrentPos == 3) { SceneManager.LoadScene("Settings"); }
         if (CurrentPos == 4) { Application.Quit(); }
+    }
+
+    private IEnumerator ShowSaveMenu(bool ExistingSaves)
+    {
+        GameObject Camera = GameObject.Find("Main Camera");
+        if (ExistingSaves) {
+            while (Camera.transform.position.x < 15)
+            {
+                Camera.transform.position += new Vector3(Time.deltaTime * 10,0,0);
+                yield return null;
+            }
+        }
+        else
+        {
+            while (Camera.transform.position.x > -15)
+            {
+                Camera.transform.position -= new Vector3(Time.deltaTime * 10, 0, 0);
+                yield return null;
+            }
+        }
+    }
+    private IEnumerator ResetCamera()
+    {
+        GameObject Camera = GameObject.Find("Main Camera");
+        while (Camera.transform.position.x < 0)
+        {
+            Camera.transform.position += new Vector3(Time.deltaTime * 10, 0, 0);
+            yield return null;
+        }
+        while (Camera.transform.position.x > 0)
+        {
+            Camera.transform.position -= new Vector3(Time.deltaTime * 10, 0, 0);
+            yield return null;
+        }
     }
 
     public void MovePlayer(int DirectionInput)
@@ -69,27 +105,28 @@ public class MainMenu : MonoBehaviour
     private IEnumerator Mover(int Direction)
     {
         Vector3 NextPosition = Player.transform.position + new Vector3(HexMovement[0] * PositionCalc[Direction][0], HexMovement[1] * PositionCalc[Direction][1], 0);
-
         if (Positions.Contains(NextPosition))
         {
             if (CurrentPos != 0)
             {
-                CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
-
-                while (CurrentLabel.color.a > 0.1f)
+                if (!(CurrentPos == 1 && !PlayerPrefs.HasKey("LatestSaveGame")))
                 {
-                    CurrentLabel.color -= new Color(0, 0, 0, 8 * Time.deltaTime);
-                    SelectHint.color -= new Color(255, 255, 255, 8 * Time.deltaTime);
-                    yield return null;
-                }
+                    CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
+                    TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
 
-                if (CurrentLabel.color.a < 0.1f)
-                {
-                    CurrentLabel.color = new Color(255, 255, 255, 0.1f);
-                    SelectHint.color = new Color(255, 255, 255, 0);
-                }
+                    while (CurrentLabel.color.a > 0.1f)
+                    {
+                        CurrentLabel.color -= new Color(0, 0, 0, 8 * Time.deltaTime);
+                        SelectHint.color -= new Color(255, 255, 255, 8 * Time.deltaTime);
+                        yield return null;
+                    }
 
+                    if (CurrentLabel.color.a < 0.1f)
+                    {
+                        CurrentLabel.color = new Color(255, 255, 255, 0.1f);
+                        SelectHint.color = new Color(255, 255, 255, 0);
+                    }
+                }
             }
 
             while (Player.transform.position != NextPosition)
@@ -121,14 +158,17 @@ public class MainMenu : MonoBehaviour
 
             if (CurrentPos != 0)
             {
-                CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
-            
-                while (CurrentLabel.color.a < 1)
+                if (!(CurrentPos == 1 && !PlayerPrefs.HasKey("LatestSaveGame")))
                 {
-                    CurrentLabel.color += new Color(255, 255, 255, 8 * Time.deltaTime);
-                    SelectHint.color += new Color(255, 255, 255, 8 * Time.deltaTime);
-                    yield return null;
+                    CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
+                    TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
+
+                    while (CurrentLabel.color.a < 1)
+                    {
+                        CurrentLabel.color += new Color(255, 255, 255, 8 * Time.deltaTime);
+                        SelectHint.color += new Color(255, 255, 255, 8 * Time.deltaTime);
+                        yield return null;
+                    }
                 }
             }
         }
