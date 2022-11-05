@@ -109,6 +109,7 @@ public class MainMenu : MonoBehaviour
                         SelectorLoad.position -= new Vector3(0, Time.deltaTime * 20, 0);
                         yield return null;
                     }
+                    SelectorLoad.position = new Vector3(SelectorLoad.position.x, SelectedLoad.position.y, 0);
                 }
                 else
                 {
@@ -117,6 +118,7 @@ public class MainMenu : MonoBehaviour
                         SelectorLoad.position += new Vector3(0, Time.deltaTime * 20, 0);
                         yield return null;
                     }
+                    SelectorLoad.position = new Vector3(SelectorLoad.position.x, SelectedLoad.position.y, 0);
                 }
                 SelectedLoad.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 1);
             }
@@ -144,6 +146,7 @@ public class MainMenu : MonoBehaviour
                         SelectorNew.position -= new Vector3(0, Time.deltaTime * 20, 0);
                         yield return null;
                     }
+                    SelectorNew.position = new Vector3(SelectorNew.position.x, SelectedNew.position.y, 0);
                 }
                 else
                 {
@@ -152,6 +155,7 @@ public class MainMenu : MonoBehaviour
                         SelectorNew.position += new Vector3(0, Time.deltaTime * 20, 0);
                         yield return null;
                     }
+                    SelectorNew.position = new Vector3(SelectorNew.position.x, SelectedNew.position.y, 0);
                 }
                 SelectedNew.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 1);
             }
@@ -214,8 +218,8 @@ public class MainMenu : MonoBehaviour
             {
                 if (!(CurrentPos == 1 && !PlayerPrefs.HasKey("LatestSaveGame")))
                 {
-                    CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
+                    CurrentLabel = GameObject.Find("OptionLabels").transform.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
+                    TextMeshProUGUI SelectHint = GameObject.Find("OptionLabels").transform.Find("SelectHint").GetComponent<TextMeshProUGUI>();
 
                     while (CurrentLabel.color.a > 0.1f)
                     {
@@ -264,7 +268,7 @@ public class MainMenu : MonoBehaviour
                 if (!(CurrentPos == 1 && !PlayerPrefs.HasKey("LatestSaveGame")))
                 {
                     CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI SelectHint = GameObject.Find("SelectHint").GetComponent<TextMeshProUGUI>();
+                    TextMeshProUGUI SelectHint = GameObject.Find("OptionLabels").transform.Find("SelectHint").GetComponent<TextMeshProUGUI>();
 
                     while (CurrentLabel.color.a < 1)
                     {
