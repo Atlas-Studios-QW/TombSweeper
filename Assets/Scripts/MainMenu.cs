@@ -28,6 +28,7 @@ public class MainMenu : MonoBehaviour
     private bool LoadMenu = false;
     private int CurrentPos = 0;
     private int CurrentSelected = 1;
+    private float OriginHeight = 0;
     TextMeshProUGUI CurrentLabel;
     private List<Vector2> Positions = new List<Vector2> { new Vector2(0, 0) };
 
@@ -37,6 +38,7 @@ public class MainMenu : MonoBehaviour
         {
             Positions.Add(new Vector2(Calc[0] * HexMovement[0], Calc[1] * HexMovement[1]));
         }
+        OriginHeight = GameObject.Find("SaveNew").transform.Find("Selector").transform.position.y;
     }
 
     private void Update()
@@ -186,6 +188,13 @@ public class MainMenu : MonoBehaviour
     }
     private IEnumerator ResetCamera()
     {
+        CurrentSelected = 1;
+
+        Transform SelectorNew = GameObject.Find("SaveNew").transform.Find("Selector");
+        Transform SelectorLoad = GameObject.Find("SaveLoad").transform.Find("Selector");
+        SelectorNew.position = new Vector3(SelectorNew.position.x, OriginHeight,0);
+        SelectorLoad.position = new Vector3(SelectorLoad.position.x, OriginHeight, 0);
+
         GameObject Camera = GameObject.Find("Main Camera");
         while (Camera.transform.position.x < 0)
         {
@@ -267,7 +276,7 @@ public class MainMenu : MonoBehaviour
             {
                 if (!(CurrentPos == 1 && !PlayerPrefs.HasKey("LatestSaveGame")))
                 {
-                    CurrentLabel = GameObject.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
+                    CurrentLabel = GameObject.Find("OptionLabels").transform.Find("Label" + CurrentPos).GetComponent<TextMeshProUGUI>();
                     TextMeshProUGUI SelectHint = GameObject.Find("OptionLabels").transform.Find("SelectHint").GetComponent<TextMeshProUGUI>();
 
                     while (CurrentLabel.color.a < 1)
