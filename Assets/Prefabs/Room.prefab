@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1722791542336779527}
   - component: {fileID: 1681471255602302995}
   - component: {fileID: 7575455068084638673}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 7523212938083667450}
   - component: {fileID: 3604408594404270568}
   - component: {fileID: 5798304110473484151}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 27308907673924487}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 4373895724068908576}
   - component: {fileID: 3447468818526069669}
   - component: {fileID: 6627761827354076213}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Flag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ GameObject:
   - component: {fileID: 1872141843808892553}
   - component: {fileID: 8890508911094669423}
   - component: {fileID: 7961582532622430617}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: BombAmount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -287,7 +287,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4694857952292899720}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.3}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -406,7 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6645297696868120022}
   - component: {fileID: 6645297696868120023}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,7 +492,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2682381257571143700}
   - component: {fileID: 4244200796586997000}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Marker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -580,7 +580,7 @@ GameObject:
   - component: {fileID: 2229747332403517512}
   - component: {fileID: 7497002004582169336}
   - component: {fileID: 2331599472763377158}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -595,7 +595,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8361502759976016936}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.001}
+  m_LocalPosition: {x: 0, y: 0, z: -1.3}
   m_LocalScale: {x: 0.0012, y: 0.0012, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -743,6 +743,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 182da95d59cf66d4c9f46adb637e3079, type: 3}
       propertyPath: m_Name
       value: Room
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 182da95d59cf66d4c9f46adb637e3079, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
