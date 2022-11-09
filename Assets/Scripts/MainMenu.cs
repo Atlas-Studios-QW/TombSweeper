@@ -39,6 +39,11 @@ public class MainMenu : MonoBehaviour
             Positions.Add(new Vector2(Calc[0] * HexMovement[0], Calc[1] * HexMovement[1]));
         }
         OriginHeight = GameObject.Find("SaveNew").transform.Find("Selector").transform.position.y;
+
+        if (!PlayerPrefs.HasKey("AutoSaveTime"))
+        {
+            PlayerPrefs.SetInt("AutoSaveTime", 0);
+        }
     }
 
     private void Update()
@@ -63,6 +68,7 @@ public class MainMenu : MonoBehaviour
         if (CurrentPos == 2) { StartCoroutine(ShowSaveMenu(true)); }
         if (CurrentPos == 6) { StartCoroutine(ShowSaveMenu(false)); }
         if (CurrentPos == 3) { SceneManager.LoadScene("Settings"); }
+        if (CurrentPos == 5) { SceneManager.LoadScene("Credits"); }
         if (CurrentPos == 4) { Application.Quit(); }
     }
 
@@ -194,6 +200,30 @@ public class MainMenu : MonoBehaviour
         Transform SelectorLoad = GameObject.Find("SaveLoad").transform.Find("Selector");
         SelectorNew.position = new Vector3(SelectorNew.position.x, OriginHeight,0);
         SelectorLoad.position = new Vector3(SelectorLoad.position.x, OriginHeight, 0);
+
+        foreach (Transform Label in GameObject.Find("SaveNew").transform)
+        {
+            if (Label.name == "Label1")
+            {
+                Label.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 1f);
+            }
+            else if (Label.name.Contains("Label"))
+            {
+                Label.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 0.1f);
+            }
+        }
+
+        foreach (Transform Label in GameObject.Find("SaveLoad").transform)
+        {
+            if (Label.name == "Label1")
+            {
+                Label.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 1f);
+            }
+            else if (Label.name.Contains("Label"))
+            {
+                Label.GetComponent<TextMeshProUGUI>().color = new Color(255, 255, 255, 0.1f);
+            }
+        }
 
         GameObject Camera = GameObject.Find("Main Camera");
         while (Camera.transform.position.x < 0)

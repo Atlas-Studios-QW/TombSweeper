@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using Unity.Mathematics;
+using Random = UnityEngine.Random;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -27,12 +29,11 @@ public class LevelBuilder : MonoBehaviour
     [Header("-----Sprites")]
     public Sprite CoinImg;
     public Sprite ItemImg;
-    public Sprite KeyImg;
+    public List<Sprite> KeySprites = new List<Sprite>();
 
     [Header("-----Items")]
     public GameObject IconParent;
     public List<Item> Items = new List<Item>();
-    public List<Sprite> KeySprites = new List<Sprite>();
     public GameObject CompassMarker;
 
     [Header("-----Settings")]
@@ -45,18 +46,7 @@ public class LevelBuilder : MonoBehaviour
     public float[] HexMovement = { 3.9f, 4.5f };
 
     [HideInInspector]
-    public List<Room> Rooms = new List<Room> { new Room(new Vector2(0,0), ContainState.Empty, 0, true) };
-    public List<Vector2> KeyHex = new List<Vector2>();
-    public List<Item> CollectedItems = new List<Item>();
-    public int CurrentMove = 0;
-    public int CurrentHexID = 1;
-    public int TotalCoins = 0;
-    public int CounterFixObjective = 0;
-    public int ItemTotal = 0;
-    public int KeyTotal = 0;
-    public bool EnableSight = false;
-    public bool HasCompass = false;
-    public Vector2 PlayerPos;
+    public SaveGameData SaveGame = new SaveGameData();
     public List<float[]> PositionCalc = new List<float[]> {
         new float[] {0.0f, 1.0f},
         new float[] {1.0f, 0.5f},
@@ -68,17 +58,14 @@ public class LevelBuilder : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("LatestSaveGame") > 3)
-        {
-            PlayerPrefs.SetInt("LatestSaveGame", PlayerPrefs.GetInt("LatestSaveGame") - 3);
-        }
-        else
+        SaveGame.rooms.Add(new Room(new Vector2(0, 0), ContainState.Empty, 0, true));
+        if (PlayerPrefs.GetInt("LatestSaveGame") < 4)
         {
             GetComponent<SavegameSystem>().LoadGame();
         }
-        LoadNewHex();
         ChoosePositions();
-        Alert($"Objective:\nFind the key pieces [{KeyTotal}/3]");
+        LoadNewHex();
+        Alert($"Objective:\nFind the key pieces [{SaveGame.intData.keyTotal}/3]");
     }
 
     private void Update()
@@ -121,26 +108,27 @@ public class LevelBuilder : MonoBehaviour
         {
             float NewKeyLocationX = Random.Range(-10 * i, 10 * i) * HexMovement[0];
             float NewKeyLocationY = Random.Range(-10 * i, 10 * i) * HexMovement[1];
-            KeyHex.Add(new Vector2(NewKeyLocationX, NewKeyLocationY));
+            SaveGame.keyHex.Add(new Vector2(NewKeyLocationX, NewKeyLocationY));
             //print(new Vector2(NewKeyLocationX, NewKeyLocationY));
         }
     }
 
     public void LoadNewHex()
     {
-        PlayerPos = Player.transform.position;
+        SaveGame.playerPos = Player.transform.position;
 
         Room CurrentRoom = null;
         bool Dead = false;
+        bool ItemFix = false;
 
-        if (HasCompass && CurrentMove % 3 == 0)
+        if (SaveGame.hasCompass && SaveGame.intData.currentMove % 8 == 0)
         {
             StartCoroutine(CompassBlink());
         }
 
-        foreach (Room Room in Rooms)   
+        foreach (Room Room in SaveGame.rooms)
         {    
-            if (Room.location == PlayerPos)
+            if (Room.location == SaveGame.playerPos)
             {
                 CurrentRoom = Room;   
             }    
@@ -149,9 +137,9 @@ public class LevelBuilder : MonoBehaviour
         if (CurrentRoom == null)
         {
             float MinDistance = Mathf.Infinity;
-            foreach (Room Room in Rooms)
+            foreach (Room Room in SaveGame.rooms)
             {
-                float Distance = Vector2.Distance(Room.location, PlayerPos);
+                float Distance = Vector2.Distance(Room.location, SaveGame.playerPos);
                 if (Distance < MinDistance)
                 {
                     MinDistance = Distance;
@@ -163,7 +151,7 @@ public class LevelBuilder : MonoBehaviour
 
 
         CurrentRoom.Entered = true;
-        GameObject HexObject = GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom));
+        GameObject HexObject = GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom));
         HexObject.transform.Find("Canvas").Find("Marker").gameObject.SetActive(false);
 
         if (CurrentRoom.contains == ContainState.Bomb)
@@ -173,44 +161,44 @@ public class LevelBuilder : MonoBehaviour
         }
         else if (CurrentRoom.contains == ContainState.Key)
         {
-            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
             CurrentRoom.contains = ContainState.Empty;
-            KeyTotal++;
-            if (KeyTotal == 3)
+            SaveGame.intData.keyTotal++;
+            if (SaveGame.intData.keyTotal == 3)
             {
                 Alert($"Objective:\nFind the exit");
             }
             else
             {
-                Alert($"Objective:\nFind the key pieces [{KeyTotal}/3]");
+                Alert($"Objective:\nFind the key pieces [{SaveGame.intData.keyTotal}/3]");
             }
         }
         else if (CurrentRoom.contains == ContainState.Coin)
         {
-            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0,0,0,0);
+            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0,0,0,0);
             CurrentRoom.contains = ContainState.Empty;
-            TotalCoins++;
+            SaveGame.intData.totalCoins++;
             Alert("Coin");
         }
         else if (CurrentRoom.contains == ContainState.Item)
         {
-            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
             CurrentRoom.contains = ContainState.Empty;
-            if (ItemTotal < 3)
+            if (SaveGame.intData.itemTotal < 3)
             {
-                CollectedItems.Add(Items[ItemTotal]);
+                SaveGame.collectedItems.Add(Items[SaveGame.intData.itemTotal]);
                 Alert("Item");
                 Alert("You collected an item!");
 
-                if (ItemTotal == 1)
+                if (SaveGame.intData.itemTotal == 1)
                 {
-                    EnableSight = true;
+                    SaveGame.enableSight = true;
                 }
-                else if (ItemTotal == 2)
+                else if (SaveGame.intData.itemTotal == 2)
                 {
-                    HasCompass = true;
+                    SaveGame.hasCompass = true;
                 }
-                else if (ItemTotal == 3)
+                else if (SaveGame.intData.itemTotal == 3)
                 {
                     
                 }
@@ -225,10 +213,10 @@ public class LevelBuilder : MonoBehaviour
         {
             foreach (float[] PosChange in PositionCalc)
             {
-                Vector2 NewHexPosition = new Vector2(Mathf.Round((PlayerPos.x + (PosChange[0] * HexMovement[0])) * 100) / 100, Mathf.Round((PlayerPos.y + (PosChange[1] * HexMovement[1])) * 100) / 100);
+                Vector2 NewHexPosition = new Vector2(Mathf.Round((SaveGame.playerPos.x + (PosChange[0] * HexMovement[0])) * 100) / 100, Mathf.Round((SaveGame.playerPos.y + (PosChange[1] * HexMovement[1])) * 100) / 100);
                 Room NewRoom = new Room(NewHexPosition, ContainState.Empty, 0, false);
 
-                foreach (Room Room in Rooms)
+                foreach (Room Room in SaveGame.rooms)
                 {
                     if (Room.location == NewHexPosition)
                     {
@@ -239,31 +227,28 @@ public class LevelBuilder : MonoBehaviour
                 if (NewRoom != null)
                 {
                     GameObject NewHex = Instantiate(Hexagon, NewHexPosition, new Quaternion(0,0,0,0), HexParent.transform);
-                    Rooms.Add(NewRoom);
-                    NewHex.name = "Hexagon" + CurrentHexID;
+                    SaveGame.rooms.Add(NewRoom);
+                    NewHex.name = "Hexagon" + SaveGame.intData.currentHexID;
 
                     bool SpawnBomb = false;
 
-                    if (CurrentHexID <= 6) { SpawnBomb = false; }
+                    if (SaveGame.intData.currentHexID <= 6) { SpawnBomb = false; }
                     else { SpawnBomb = Random.Range(0, 100) > (100 - BombChance); }
 
                     float KeyMinDistance = Mathf.Infinity;
-                    foreach (Vector2 KeyHex in KeyHex)
+                    float Distance = Vector2.Distance(SaveGame.keyHex[SaveGame.intData.keyTotal], SaveGame.playerPos);
+                    if (Distance < KeyMinDistance)
                     {
-                        float Distance = Vector2.Distance(KeyHex, PlayerPos);
-                        if (Distance < KeyMinDistance)
-                        {
-                            KeyMinDistance = Distance;
-                        }
+                        KeyMinDistance = Distance;
                     }
 
                     if (KeyMinDistance < 3.0f && !KeyHexFound)
                     {
                         KeyHexFound = true;
-                        if (EnableSight)
+                        if (SaveGame.enableSight)
                         {
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
-                            NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = KeyImg;
+                            NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = KeySprites[SaveGame.intData.keyTotal];
                         }
                         NewRoom.contains = ContainState.Key;
                     }
@@ -280,28 +265,29 @@ public class LevelBuilder : MonoBehaviour
                     else if (Random.Range(0,100) > (100 - CoinChance))
                     {
                         NewRoom.contains = ContainState.Coin;
-                        if (EnableSight)
+                        if (SaveGame.enableSight)
                         {
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = CoinImg;
                         }
                     }
-                    else if (Random.Range(0, 100) > (100 - ItemChance) && ItemTotal < 3 && CurrentMove > ItemTotal * 10 + 10)
+                    else if (!ItemFix && Random.Range(0, 100) > (100 - ItemChance) && SaveGame.intData.itemTotal < 3 && SaveGame.intData.currentMove > SaveGame.intData.itemTotal * 10 + 10)
                     {
+                        ItemFix = true;
                         NewRoom.contains = ContainState.Item;
-                        if (EnableSight)
+                        if (SaveGame.enableSight)
                         {
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = ItemImg;
                         }
                     }
 
-                    CurrentHexID++;
+                    SaveGame.intData.currentHexID++;
 
                 }
                 else
                 {
-                    foreach (Room Room in Rooms) { 
+                    foreach (Room Room in SaveGame.rooms) { 
                         if (Room.location == NewHexPosition && Room.contains == ContainState.Bomb) 
                         {
                             BombsFound++;
@@ -311,12 +297,12 @@ public class LevelBuilder : MonoBehaviour
             }
 
             CurrentRoom.BombsFound = BombsFound;
-            GameObject.Find("Hexagon" + Rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = BombsFound.ToString();
-            //print(Rooms.Count);
+            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("BombAmount").GetComponent<TextMeshProUGUI>().text = BombsFound.ToString();
+            //print(SaveGame.rooms.Count);
             //print(CurrentRoom.location);
         }
 
-        CurrentMove++;
+        SaveGame.intData.currentMove++;
     }
 
     public void Alert(string Message)
@@ -326,19 +312,28 @@ public class LevelBuilder : MonoBehaviour
 
     private IEnumerator CompassBlink()
     {
-        CompassMarker.transform.rotation = new Quaternion(0, 0, 0, 0);
+        Vector2 NextKeyPos = SaveGame.keyHex[SaveGame.intData.keyTotal];
+        print(NextKeyPos);
+
+        float direction = Mathf.Atan2(NextKeyPos.y - SaveGame.playerPos.y, NextKeyPos.x - SaveGame.playerPos.x) * 180 / Mathf.PI - 90;
+
+        print(direction);
+
+        CompassMarker.transform.rotation = Quaternion.Euler(0,0,direction);
+
+        print(CompassMarker.transform.rotation);
 
         Image Marker = CompassMarker.transform.Find("Marker").GetComponent<Image>();
         for (int i = 0; i < 4; i++)
         {
             while (Marker.color.a < 1.0f)
             {
-                Marker.color += new Color(0, 0, 0, 0.025f);
+                Marker.color += new Color(0, 0, 0, Time.deltaTime * 10);
                 yield return null;
             }
             while (Marker.color.a > 0.0f)
             {
-                Marker.color -= new Color(0, 0, 0, 0.025f);
+                Marker.color -= new Color(0, 0, 0, Time.deltaTime * 10);
                 yield return null;
             }
         }
@@ -351,7 +346,7 @@ public class LevelBuilder : MonoBehaviour
         if (Message.Contains("Objective:"))
         {
             ObjectiveBox.GetComponent<TextMeshProUGUI>().text = Message;
-            CounterFixObjective++;
+            SaveGame.intData.counterFixObjective++;
             while (ObjectiveBox.transform.position.x < 590)
             {
                 ObjectiveBox.transform.position += new Vector3(20, 0, 0);
@@ -359,9 +354,9 @@ public class LevelBuilder : MonoBehaviour
             }
 
             yield return new WaitForSeconds(2);
-            CounterFixObjective--;
+            SaveGame.intData.counterFixObjective--;
 
-            if (CounterFixObjective == 0)
+            if (SaveGame.intData.counterFixObjective == 0)
             {
                 while (ObjectiveBox.transform.position.x > - 610)
                 {
@@ -372,20 +367,20 @@ public class LevelBuilder : MonoBehaviour
         }
         else if (Message == "Coin")
         {
-            UIItems.Find("CoinCounter").GetComponent<TextMeshProUGUI>().text = "<sprite index=0> " + TotalCoins.ToString("000");
+            UIItems.Find("CoinCounter").GetComponent<TextMeshProUGUI>().text = "<sprite index=0> " + SaveGame.intData.totalCoins.ToString("000");
         }
         else if (Message == "Item")
         {
-            if (ItemTotal == 0)
+            if (SaveGame.intData.itemTotal == 0)
             {
                 ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 50);
             }
             ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 150);
             GameObject NewIcon = Instantiate(IconPrefab, IconParent.transform);
-            NewIcon.transform.position += new Vector3(0, 150 * ItemTotal, 0);
-            NewIcon.transform.Find("Icon").GetComponent<Image>().sprite = CollectedItems[ItemTotal].icon;
-            NewIcon.transform.Find("Icon").name = CollectedItems[ItemTotal].name;
-            ItemTotal++;
+            NewIcon.transform.position += new Vector3(0, 150 * SaveGame.intData.itemTotal, 0);
+            NewIcon.transform.Find("Icon").GetComponent<Image>().sprite = SaveGame.collectedItems[SaveGame.intData.itemTotal].icon;
+            NewIcon.transform.Find("Icon").name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
+            SaveGame.intData.itemTotal++;
         }
         else
         {
