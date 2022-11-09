@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     private GameObject Player;
     private GameObject PausePanel;
     private GameObject DeathPanel;
+    private GameObject WinPanel;
     private float[] HexMovement;
     private List<float[]> PositionCalc;
     private bool CanMove = true;
@@ -16,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
         Player = GetComponent<LevelBuilder>().Player;
         PausePanel = GetComponent<LevelBuilder>().PausePanel;
         DeathPanel = GetComponent<LevelBuilder>().DeathPanel;
+        WinPanel = GetComponent<LevelBuilder>().WinPanel;
         HexMovement = GetComponent<LevelBuilder>().HexMovement;
         PositionCalc = GetComponent<LevelBuilder>().PositionCalc;
     }
@@ -32,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void MovePlayer(int DirectionInput)
     {
-        if (CanMove && !PausePanel.activeSelf && !DeathPanel.activeSelf)
+        if (CanMove && !PausePanel.activeSelf && !DeathPanel.activeSelf && !WinPanel.activeSelf)
         {
             CanMove = false;
             StartCoroutine(Mover(DirectionInput));

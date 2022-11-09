@@ -25,6 +25,7 @@ public class LevelBuilder : MonoBehaviour
     public GameObject ObjectiveBox;
     public GameObject PausePanel;
     public GameObject DeathPanel;
+    public GameObject WinPanel;
 
     [Header("-----Sprites")]
     public Sprite CoinImg;
@@ -119,7 +120,6 @@ public class LevelBuilder : MonoBehaviour
 
         Room CurrentRoom = null;
         bool Dead = false;
-        bool ItemFix = false;
 
         if (SaveGame.hasCompass && SaveGame.intData.currentMove % 8 == 0)
         {
@@ -164,7 +164,11 @@ public class LevelBuilder : MonoBehaviour
             GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
             CurrentRoom.contains = ContainState.Empty;
             SaveGame.intData.keyTotal++;
-            if (SaveGame.intData.keyTotal == 3)
+            if (SaveGame.intData.keyTotal == 4)
+            {
+                WinPanel.SetActive(true);
+            }
+            else if (SaveGame.intData.keyTotal == 3)
             {
                 Alert($"Objective:\nFind the exit");
             }
@@ -208,6 +212,7 @@ public class LevelBuilder : MonoBehaviour
         int NewBombs = 0;
         int BombsFound = 0;
         bool KeyHexFound = false;
+        bool ItemAdded = true;
 
         if (!Dead)
         {
@@ -236,20 +241,24 @@ public class LevelBuilder : MonoBehaviour
                     else { SpawnBomb = Random.Range(0, 100) > (100 - BombChance); }
 
                     float KeyMinDistance = Mathf.Infinity;
-                    float Distance = Vector2.Distance(SaveGame.keyHex[SaveGame.intData.keyTotal], SaveGame.playerPos);
-                    if (Distance < KeyMinDistance)
+                    if (SaveGame.intData.keyFix < 4)
                     {
-                        KeyMinDistance = Distance;
+                        float Distance = Vector2.Distance(SaveGame.keyHex[SaveGame.intData.keyFix], SaveGame.playerPos);
+                        if (Distance < KeyMinDistance)
+                        {
+                            KeyMinDistance = Distance;
+                        }
                     }
 
-                    if (KeyMinDistance < 3.0f && !KeyHexFound)
+                    if (KeyMinDistance < 5.0f && !KeyHexFound)
                     {
                         KeyHexFound = true;
                         if (SaveGame.enableSight)
                         {
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
-                            NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = KeySprites[SaveGame.intData.keyTotal];
+                            NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = KeySprites[SaveGame.intData.keyFix];
                         }
+                        SaveGame.intData.keyFix++;
                         NewRoom.contains = ContainState.Key;
                     }
                     else if (SpawnBomb && BombsFound != 3)
@@ -271,9 +280,11 @@ public class LevelBuilder : MonoBehaviour
                             NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = CoinImg;
                         }
                     }
-                    else if (!ItemFix && Random.Range(0, 100) > (100 - ItemChance) && SaveGame.intData.itemTotal < 3 && SaveGame.intData.currentMove > SaveGame.intData.itemTotal * 10 + 10)
+                    else if (ItemAdded && Random.Range(0, 100) > (100 - ItemChance) && SaveGame.intData.itemTotal < 3 && SaveGame.intData.currentMove > (SaveGame.intData.itemFix * 20 + 20))
                     {
-                        ItemFix = true;
+                        print(SaveGame.intData.currentMove);
+                        ItemAdded = false;
+                        SaveGame.intData.itemFix++;
                         NewRoom.contains = ContainState.Item;
                         if (SaveGame.enableSight)
                         {
@@ -305,11 +316,6 @@ public class LevelBuilder : MonoBehaviour
         SaveGame.intData.currentMove++;
     }
 
-    public void Alert(string Message)
-    {
-        StartCoroutine(Alerter(Message));
-    }
-
     private IEnumerator CompassBlink()
     {
         Vector2 NextKeyPos = SaveGame.keyHex[SaveGame.intData.keyTotal];
@@ -337,6 +343,11 @@ public class LevelBuilder : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    public void Alert(string Message)
+    {
+        StartCoroutine(Alerter(Message));
     }
 
     private IEnumerator Alerter(string Message)

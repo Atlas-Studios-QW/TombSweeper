@@ -24,6 +24,10 @@ public class SavegameSystem : MonoBehaviour
 
     public bool CheckSavegame(int SaveGameNumber)
     {
+        if (!File.Exists(SavegameFolder + $"/Save{SaveGameNumber}.txt"))
+        {
+            File.Create(SavegameFolder + $"/Save{SaveGameNumber}.txt");
+        }
         StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         string fileContent = reader.ReadToEnd();
         reader.Close();
@@ -54,6 +58,7 @@ public class SavegameSystem : MonoBehaviour
         SaveGameData SaveGame = Script.SaveGame;
 
         int SaveGameNumber = PlayerPrefs.GetInt("LatestSaveGame");
+        CheckSavegame(SaveGameNumber);
         StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         string fileContent = reader.ReadToEnd();
         reader.Close();
@@ -75,13 +80,14 @@ public class SavegameSystem : MonoBehaviour
         reader.Close();
 
         LevelBuilder Script = GetComponent<LevelBuilder>();
-        Script.SaveGame = ReadData;
 
         foreach (Item Item in ReadData.collectedItems)
         {
             Script.Alert("Item");
         }
         Script.Alert("Coin");
+
+        Script.SaveGame = ReadData;
 
         Script.Player.transform.position = ReadData.playerPos;
 
