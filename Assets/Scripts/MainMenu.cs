@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -48,6 +49,45 @@ public class MainMenu : MonoBehaviour
 
     private void Update()
     {
+        if ( !InMenu && Input.GetMouseButtonUp(0) && CanMove)
+        {
+            GameObject ClickedRoomUI = IsPointerOverUIElement("RoomInteract");
+            if (ClickedRoomUI != null)
+            {
+                Transform ClickedRoom = ClickedRoomUI.transform.parent.parent.parent;
+                float RoomDistance = Vector2.Distance(Player.transform.position, ClickedRoom.position);
+                if (RoomDistance < HexMovement[1] * 1.25f && RoomDistance > 0.2f)
+                {
+                    Vector2 Clicked = new Vector2(100,100);
+
+                    float MinDistance = Mathf.Infinity;
+                    foreach (Vector2 Room in Positions)
+                    {
+                        float Distance = Vector2.Distance(ClickedRoom.position, Room);
+                        if (Distance < MinDistance)
+                        {
+                            MinDistance = Distance;
+                            Clicked = Room;
+                        }
+                    }
+
+                    if (Clicked != new Vector2(100,100))
+                    {
+                        int direction = -(int)Mathf.Round((Mathf.Atan2(Clicked.y - Player.transform.position.y, Clicked.x - Player.transform.position.x) * 180 / Mathf.PI - 90) / 60);
+                        if (direction < 0)
+                        {
+                            direction += 6;
+                        }
+                        MovePlayer(direction);
+                    }
+                }
+                if (RoomDistance < 0.2f)
+                {
+                    ChooseOption();
+                }
+            }
+        }
+
         if (!InMenu && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) ) && CanMove) { ChooseOption(); }
         if (!InMenu && Input.GetKeyDown(KeyCode.W)) { MovePlayer(0); }
         if (!InMenu && Input.GetKeyDown(KeyCode.E)) { MovePlayer(1); }
@@ -72,7 +112,7 @@ public class MainMenu : MonoBehaviour
         if (CurrentPos == 4) { Application.Quit(); }
     }
 
-    private void ChooseSaveGame()
+    public void ChooseSaveGame()
     {
         if (LoadMenu)
         {
@@ -87,6 +127,11 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetInt("LatestSaveGame", CurrentSelected + 3);
             SceneManager.LoadScene("Game");
         }
+    }
+
+    public void SaveSelectorBtn(bool Next)
+    {
+        StartCoroutine(SelectSave(Next));
     }
 
     private IEnumerator SelectSave(bool Next)
@@ -320,5 +365,30 @@ public class MainMenu : MonoBehaviour
         }
 
         CanMove = true;
+    }
+
+    public GameObject IsPointerOverUIElement(string TagName)
+    {
+        return IsPointerOverUIElement(GetEventSystemRaycastResults(), TagName);
+    }
+
+    private GameObject IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults, string TagName)
+    {
+        for (int index = 0; index < eventSystemRaysastResults.Count; index++)
+        {
+            RaycastResult curRaysastResult = eventSystemRaysastResults[index];
+            if (curRaysastResult.gameObject.tag == TagName)
+                return curRaysastResult.gameObject;
+        }
+        return null;
+    }
+
+    static List<RaycastResult> GetEventSystemRaycastResults()
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Input.mousePosition;
+        List<RaycastResult> raysastResults = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, raysastResults);
+        return raysastResults;
     }
 }

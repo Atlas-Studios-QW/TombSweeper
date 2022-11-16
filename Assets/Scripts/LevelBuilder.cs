@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 using Unity.Mathematics;
 using Random = UnityEngine.Random;
+using JetBrains.Annotations;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -26,10 +27,15 @@ public class LevelBuilder : MonoBehaviour
     public GameObject PausePanel;
     public GameObject DeathPanel;
     public GameObject WinPanel;
+    public GameObject ParticlesParent;
+
+    [Header("-----Particles")]
+    public GameObject Explosion;
 
     [Header("-----Sprites")]
     public Sprite CoinImg;
     public Sprite ItemImg;
+    public Sprite BombImg;
     public List<Sprite> KeySprites = new List<Sprite>();
 
     [Header("-----Items")]
@@ -56,6 +62,7 @@ public class LevelBuilder : MonoBehaviour
         new float[] {-1.0f, -0.5f},
         new float[] {-1.0f, 0.5f}
     };
+    private bool CanUseDetonator = true;
 
     private void Start()
     {
@@ -66,7 +73,14 @@ public class LevelBuilder : MonoBehaviour
         }
         ChoosePositions();
         LoadNewHex();
-        Alert($"Objective:\nFind the key pieces [{SaveGame.intData.keyTotal}/3]");
+        if (SaveGame.intData.keyTotal < 3)
+        {
+            Alert($"Objective:\nFind the key pieces [{SaveGame.intData.keyTotal}/3]");
+        }
+        else
+        {
+            Alert($"Objective:\nFind the exit");
+        }
     }
 
     private void Update()
@@ -76,9 +90,15 @@ public class LevelBuilder : MonoBehaviour
             PausePanel.SetActive(!PausePanel.activeSelf);
         }
 
-        string ItemName = IsPointerOverUIElement();
-        if (ItemName != null)
+        if (Input.GetKeyDown(KeyCode.T) && SaveGame.hasDetonator && CanUseDetonator)
         {
+            StartCoroutine(Detonator());
+        }
+
+        GameObject HoveredItem = IsPointerOverUIElement("ItemUI");
+        if (HoveredItem != null)
+        {
+            string ItemName = HoveredItem.name;
             Item CurrentItem = null;
             foreach (Item item in Items)
             {
@@ -161,7 +181,6 @@ public class LevelBuilder : MonoBehaviour
         }
         else if (CurrentRoom.contains == ContainState.Key)
         {
-            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
             CurrentRoom.contains = ContainState.Empty;
             SaveGame.intData.keyTotal++;
             if (SaveGame.intData.keyTotal == 4)
@@ -179,14 +198,12 @@ public class LevelBuilder : MonoBehaviour
         }
         else if (CurrentRoom.contains == ContainState.Coin)
         {
-            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0,0,0,0);
             CurrentRoom.contains = ContainState.Empty;
             SaveGame.intData.totalCoins++;
             Alert("Coin");
         }
         else if (CurrentRoom.contains == ContainState.Item)
         {
-            GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
             CurrentRoom.contains = ContainState.Empty;
             if (SaveGame.intData.itemTotal < 3)
             {
@@ -204,10 +221,12 @@ public class LevelBuilder : MonoBehaviour
                 }
                 else if (SaveGame.intData.itemTotal == 3)
                 {
-                    
+                    SaveGame.hasDetonator = true;
                 }
             }
         }
+
+        GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(CurrentRoom)).transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(0, 0, 0, 0);
 
         int NewBombs = 0;
         int BombsFound = 0;
@@ -282,7 +301,6 @@ public class LevelBuilder : MonoBehaviour
                     }
                     else if (ItemAdded && Random.Range(0, 100) > (100 - ItemChance) && SaveGame.intData.itemTotal < 3 && SaveGame.intData.currentMove > (SaveGame.intData.itemFix * 20 + 20))
                     {
-                        print(SaveGame.intData.currentMove);
                         ItemAdded = false;
                         SaveGame.intData.itemFix++;
                         NewRoom.contains = ContainState.Item;
@@ -319,15 +337,9 @@ public class LevelBuilder : MonoBehaviour
     private IEnumerator CompassBlink()
     {
         Vector2 NextKeyPos = SaveGame.keyHex[SaveGame.intData.keyTotal];
-        print(NextKeyPos);
 
         float direction = Mathf.Atan2(NextKeyPos.y - SaveGame.playerPos.y, NextKeyPos.x - SaveGame.playerPos.x) * 180 / Mathf.PI - 90;
-
-        print(direction);
-
         CompassMarker.transform.rotation = Quaternion.Euler(0,0,direction);
-
-        print(CompassMarker.transform.rotation);
 
         Image Marker = CompassMarker.transform.Find("Marker").GetComponent<Image>();
         for (int i = 0; i < 4; i++)
@@ -352,15 +364,13 @@ public class LevelBuilder : MonoBehaviour
 
     private IEnumerator Alerter(string Message)
     {
-        Transform UIItems = CoinBox.transform.Find("Padding");
-
         if (Message.Contains("Objective:"))
         {
             ObjectiveBox.GetComponent<TextMeshProUGUI>().text = Message;
             SaveGame.intData.counterFixObjective++;
-            while (ObjectiveBox.transform.position.x < 590)
+            while (ObjectiveBox.transform.position.x < -30)
             {
-                ObjectiveBox.transform.position += new Vector3(20, 0, 0);
+                ObjectiveBox.transform.position += new Vector3(500 * Time.deltaTime, 0, 0);
                 yield return null;
             }
 
@@ -369,15 +379,16 @@ public class LevelBuilder : MonoBehaviour
 
             if (SaveGame.intData.counterFixObjective == 0)
             {
-                while (ObjectiveBox.transform.position.x > - 610)
+                while (ObjectiveBox.transform.position.x > -Screen.width * 0.601)
                 {
-                    ObjectiveBox.transform.position -= new Vector3(20, 0, 0);
+                    ObjectiveBox.transform.position -= new Vector3(500 * Time.deltaTime, 0, 0);
                     yield return null;
                 }
             }
         }
         else if (Message == "Coin")
         {
+            Transform UIItems = CoinBox.transform.Find("Padding");
             UIItems.Find("CoinCounter").GetComponent<TextMeshProUGUI>().text = "<sprite index=0> " + SaveGame.intData.totalCoins.ToString("000");
         }
         else if (Message == "Item")
@@ -390,6 +401,7 @@ public class LevelBuilder : MonoBehaviour
             GameObject NewIcon = Instantiate(IconPrefab, IconParent.transform);
             NewIcon.transform.position += new Vector3(0, 150 * SaveGame.intData.itemTotal, 0);
             NewIcon.transform.Find("Icon").GetComponent<Image>().sprite = SaveGame.collectedItems[SaveGame.intData.itemTotal].icon;
+            NewIcon.transform.Find("Icon").parent.name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
             NewIcon.transform.Find("Icon").name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
             SaveGame.intData.itemTotal++;
         }
@@ -401,23 +413,66 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
+    private IEnumerator Detonator()
+    {
+        CanUseDetonator = false;
+
+        Room ClosestBombRoom = new Room();
+        float MinDistance = Mathf.Infinity;
+        foreach (Room Room in SaveGame.rooms)
+        {
+            if (Room.contains == ContainState.Bomb)
+            {
+                float Distance = Vector2.Distance(SaveGame.playerPos, Room.location);
+                if (Distance < MinDistance)
+                {
+                    MinDistance = Distance;
+                    ClosestBombRoom = Room;
+                }
+            }
+        }
+
+        GameObject ExplosionAnimation = Instantiate(Explosion);
+        ExplosionAnimation.transform.parent = ParticlesParent.transform;
+        ExplosionAnimation.transform.position = ClosestBombRoom.location;
+        ClosestBombRoom.contains = ContainState.Empty;
+
+        Transform RoomCanvas = GameObject.Find("Hexagon" + SaveGame.rooms.IndexOf(ClosestBombRoom)).transform.Find("Canvas");
+        RoomCanvas.Find("Icon").GetComponent<Image>().sprite = BombImg;
+        RoomCanvas.Find("Icon").GetComponent<Image>().color = new Color(255,255,255,1);
+        RoomCanvas.Find("Marker").gameObject.SetActive(false);
+
+        TextMeshProUGUI Timer = IconParent.transform.Find("Detonator").Find("ItemTimer").GetComponent<TextMeshProUGUI>();
+
+        int Time = 30;
+        Timer.text = Time + "";
+        while (Time > 0)
+        {
+            Time--;
+            Timer.text = Time + "";
+            yield return new WaitForSeconds(1);
+        }
+        Timer.text = "";
+        CanUseDetonator = true;
+    }
+
     private void EndGame()
     {
         DeathPanel.SetActive(true);
     }
 
-    public string IsPointerOverUIElement()
+    public GameObject IsPointerOverUIElement(string TagName)
     {
-        return IsPointerOverUIElement(GetEventSystemRaycastResults());
+        return IsPointerOverUIElement(GetEventSystemRaycastResults(), TagName);
     }
 
-    private string IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults)
+    private GameObject IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults, string TagName)
     {
         for (int index = 0; index < eventSystemRaysastResults.Count; index++)
         {
             RaycastResult curRaysastResult = eventSystemRaysastResults[index];
-            if (curRaysastResult.gameObject.tag == "ItemUI")
-                return curRaysastResult.gameObject.name;
+            if (curRaysastResult.gameObject.tag == TagName)
+                return curRaysastResult.gameObject;
         }
         return null;
     }

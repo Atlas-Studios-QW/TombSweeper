@@ -10,6 +10,7 @@ public class Settings : MonoBehaviour
 {
     public GameObject ViewModeSelector;
     public GameObject IntervalSelector;
+    public GameObject Confirmation;
 
     private int ViewMode = 0;
     private int Interval = 0;
@@ -60,5 +61,13 @@ public class Settings : MonoBehaviour
     {
         PlayerPrefs.SetInt("ViewMode", ViewModeDropDown.value);
         PlayerPrefs.SetInt("AutoSaveTime", int.Parse(IntervalSlider.value.ToString()));
+        StartCoroutine(Alerter());
+    }
+
+    private IEnumerator Alerter()
+    {
+        Confirmation.SetActive(true);
+        yield return new WaitForSeconds(1);
+        Confirmation.SetActive(false);
     }
 }

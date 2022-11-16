@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private LevelBuilder levelBuilder;
     private GameObject Player;
     private GameObject PausePanel;
     private GameObject DeathPanel;
@@ -14,16 +16,53 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        Player = GetComponent<LevelBuilder>().Player;
-        PausePanel = GetComponent<LevelBuilder>().PausePanel;
-        DeathPanel = GetComponent<LevelBuilder>().DeathPanel;
-        WinPanel = GetComponent<LevelBuilder>().WinPanel;
-        HexMovement = GetComponent<LevelBuilder>().HexMovement;
-        PositionCalc = GetComponent<LevelBuilder>().PositionCalc;
+        levelBuilder = GetComponent<LevelBuilder>();
+        Player = levelBuilder.Player;
+        PausePanel = levelBuilder.PausePanel;
+        DeathPanel = levelBuilder.DeathPanel;
+        WinPanel = levelBuilder.WinPanel;
+        HexMovement = levelBuilder.HexMovement;
+        PositionCalc = levelBuilder.PositionCalc;
     }
 
     private void Update()
     {
+        if (Input.GetMouseButtonUp(0))
+        {
+            GameObject ClickedRoomUI = levelBuilder.IsPointerOverUIElement("RoomInteract");
+            if (ClickedRoomUI != null)
+            {
+                Transform ClickedRoom = ClickedRoomUI.transform.parent.parent.parent;
+                float RoomDistance = Vector2.Distance(levelBuilder.SaveGame.playerPos, ClickedRoom.position);
+                if (RoomDistance < HexMovement[1] * 1.25f && RoomDistance > 0.2f)
+                {
+                    Room Clicked = null;
+
+                    float MinDistance = Mathf.Infinity;
+                    foreach (Room Room in levelBuilder.SaveGame.rooms)
+                    {
+                        float Distance = Vector2.Distance(ClickedRoom.position, Room.location);
+                        if (Distance < MinDistance)
+                        {
+                            MinDistance = Distance;
+                            Clicked = Room;
+                        }
+                    }
+
+                    if (Clicked != null)
+                    {
+                        int direction = -(int)Mathf.Round((Mathf.Atan2(Clicked.location.y - levelBuilder.SaveGame.playerPos.y, Clicked.location.x - levelBuilder.SaveGame.playerPos.x) * 180 / Mathf.PI - 90) / 60);
+                        if (direction < 0)
+                        {
+                            direction += 6;
+                        }
+                        MovePlayer(direction);
+                    }
+                }
+            }
+        }
+
+
         if (Input.GetKeyDown(KeyCode.W)) { MovePlayer(0); }
         if (Input.GetKeyDown(KeyCode.E)) { MovePlayer(1); }
         if (Input.GetKeyDown(KeyCode.D)) { MovePlayer(2); }

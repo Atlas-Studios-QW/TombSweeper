@@ -81,6 +81,8 @@ public class SavegameSystem : MonoBehaviour
 
         LevelBuilder Script = GetComponent<LevelBuilder>();
 
+        Script.SaveGame.collectedItems = ReadData.collectedItems;
+
         foreach (Item Item in ReadData.collectedItems)
         {
             Script.Alert("Item");

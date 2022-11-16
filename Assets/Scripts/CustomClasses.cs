@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -28,6 +29,14 @@ public class Room
     public ContainState contains;
     public int BombsFound;
     public bool Entered;
+
+    public Room()
+    {
+        location = new Vector2();
+        contains = ContainState.Empty;
+        BombsFound = 0;
+        Entered = false;
+    }
 
     public Room(Vector2 Location, ContainState Contains, int bombsFound, bool entered)
     {
@@ -83,6 +92,7 @@ public class SaveGameData
     public IntData intData;
     public bool enableSight;
     public bool hasCompass;
+    public bool hasDetonator;
     public Vector2 playerPos;
 
     public SaveGameData()
@@ -93,10 +103,11 @@ public class SaveGameData
         intData = new IntData();
         enableSight = false;
         hasCompass = false;
+        hasDetonator = false;
         playerPos = new Vector2(0,0);
     }
 
-    public SaveGameData(List<Room> Rooms, List<Vector2> KeyHex, List<Item> CollectedItems, IntData IntData, bool EnableSight, bool HasCompass, Vector2 PlayerPos)
+    public SaveGameData(List<Room> Rooms, List<Vector2> KeyHex, List<Item> CollectedItems, IntData IntData, bool EnableSight, bool HasCompass, bool HasDetonator, Vector2 PlayerPos)
     {
         rooms = Rooms;
         keyHex = KeyHex;
@@ -104,6 +115,7 @@ public class SaveGameData
         intData = IntData;
         enableSight = EnableSight;
         hasCompass = HasCompass;
+        hasDetonator = HasDetonator;
         playerPos = PlayerPos;
     }
 }
