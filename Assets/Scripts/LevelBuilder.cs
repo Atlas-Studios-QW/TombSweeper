@@ -44,7 +44,7 @@ public class LevelBuilder : MonoBehaviour
     public GameObject CompassMarker;
 
     [Header("-----Settings")]
-    public int BombChance = 25;
+    public int BombDifficulty = 30;
     public int CoinChance = 8;
     public int ItemChance = 4;
 
@@ -66,10 +66,13 @@ public class LevelBuilder : MonoBehaviour
 
     private void Start()
     {
+        SaveGame.intData.difficulty = BombDifficulty;
+
         SaveGame.rooms.Add(new Room(new Vector2(0, 0), ContainState.Empty, 0, true));
         if (PlayerPrefs.GetInt("LatestSaveGame") < 4)
         {
             GetComponent<SavegameSystem>().LoadGame();
+            print("Lowered Difficulty: " + SaveGame.intData.difficulty);
         }
         ChoosePositions();
         LoadNewHex();
@@ -90,9 +93,9 @@ public class LevelBuilder : MonoBehaviour
             PausePanel.SetActive(!PausePanel.activeSelf);
         }
 
-        if (Input.GetKeyDown(KeyCode.T) && SaveGame.hasDetonator && CanUseDetonator)
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            StartCoroutine(Detonator());
+            UseDetonator();
         }
 
         GameObject HoveredItem = IsPointerOverUIElement("ItemUI");
@@ -137,6 +140,14 @@ public class LevelBuilder : MonoBehaviour
     public void LoadNewHex()
     {
         SaveGame.playerPos = Player.transform.position;
+
+        bool addDifficulty = Random.Range(0, 100) > (100 - (BombDifficulty / 5));
+        if (addDifficulty && SaveGame.intData.difficulty < BombDifficulty * 1.8 && SaveGame.intData.difficulty < 80)
+        {
+            SaveGame.intData.difficulty++;
+        }
+
+        print("New Difficulty: "+SaveGame.intData.difficulty);
 
         Room CurrentRoom = null;
         bool Dead = false;
@@ -257,7 +268,7 @@ public class LevelBuilder : MonoBehaviour
                     bool SpawnBomb = false;
 
                     if (SaveGame.intData.currentHexID <= 6) { SpawnBomb = false; }
-                    else { SpawnBomb = Random.Range(0, 100) > (100 - BombChance); }
+                    else { SpawnBomb = Random.Range(0, 100) > (100 - SaveGame.intData.difficulty); }
 
                     float KeyMinDistance = Mathf.Infinity;
                     if (SaveGame.intData.keyFix < 4)
@@ -404,12 +415,26 @@ public class LevelBuilder : MonoBehaviour
             NewIcon.transform.Find("Icon").parent.name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
             NewIcon.transform.Find("Icon").name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
             SaveGame.intData.itemTotal++;
+            if (SaveGame.intData.itemTotal == 3)
+            {
+                IconParent.transform.Find("Detonator").Find("Button").GetComponent<Button>().onClick.AddListener(UseDetonator);
+                print("Added Listener");
+            }
         }
         else
         {
             AlertBox.GetComponent<TextMeshProUGUI>().text = Message;
             yield return new WaitForSeconds(1);
             AlertBox.GetComponent<TextMeshProUGUI>().text = "";
+        }
+    }
+
+    public void UseDetonator()
+    {
+        print("Detonator Used");
+        if (SaveGame.hasDetonator && CanUseDetonator)
+        {
+            StartCoroutine(Detonator());
         }
     }
 
@@ -458,6 +483,10 @@ public class LevelBuilder : MonoBehaviour
 
     private void EndGame()
     {
+        int NewDifficulty = (int) Mathf.Floor((SaveGame.intData.difficulty + BombDifficulty)/2);
+        SaveGame.intData.totalDeaths++;
+        GetComponent<SavegameSystem>().FixedValues(NewDifficulty, SaveGame.intData.totalDeaths);
+        GetComponent<Menus>().SetDeathHearts(5-SaveGame.intData.totalDeaths);
         DeathPanel.SetActive(true);
     }
 

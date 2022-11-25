@@ -115,4 +115,26 @@ public class SavegameSystem : MonoBehaviour
             RoomID++;
         }
     }
+
+    public void FixedValues(int NewDifficulty, int TotalDeaths)
+    {
+        int SaveGameNumber = PlayerPrefs.GetInt("LatestSaveGame");
+        if (SaveGameNumber < 4)
+        {
+            SavegameFolder = Application.persistentDataPath + "/Savegames";
+            StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
+            string ReadJson = reader.ReadToEnd();
+            SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(ReadJson)));
+            reader.Close();
+
+            ReadData.intData.difficulty = NewDifficulty;
+            ReadData.intData.totalDeaths = TotalDeaths;
+
+            CheckSavegame(SaveGameNumber);
+            string EncrpytedData = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(ReadData)));
+            StreamWriter writer = new StreamWriter(File.OpenWrite(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
+            writer.Write(EncrpytedData);
+            writer.Close();
+        }
+    }
 }

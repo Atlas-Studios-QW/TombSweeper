@@ -363,7 +363,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: ExitGame
         m_Mode: 1
@@ -497,7 +497,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: LoadScene
         m_Mode: 5
@@ -1602,7 +1602,6 @@ GameObject:
   - component: {fileID: 347031426}
   - component: {fileID: 347031425}
   - component: {fileID: 347031424}
-  - component: {fileID: 347031428}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -1701,18 +1700,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &347031428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 347031423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 391ad4acb57fb2341b490b3df170ebf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &453798708
 GameObject:
   m_ObjectHideFlags: 0
@@ -1797,7 +1784,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: LoadScene
         m_Mode: 5
@@ -2438,7 +2425,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: LoadScene
         m_Mode: 5
@@ -2648,7 +2635,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: ExitGame
         m_Mode: 1
@@ -2960,6 +2947,7 @@ RectTransform:
   - {fileID: 76390750}
   - {fileID: 1742188423}
   - {fileID: 2145199959}
+  - {fileID: 1495815597}
   m_Father: {fileID: 854526}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3756,6 +3744,7 @@ GameObject:
   - component: {fileID: 1395125435}
   - component: {fileID: 1395125436}
   - component: {fileID: 1395125437}
+  - component: {fileID: 1395125438}
   m_Layer: 0
   m_Name: ScriptHolder
   m_TagString: Untagged
@@ -3828,7 +3817,7 @@ MonoBehaviour:
       go.
     icon: {fileID: 21300000, guid: 3f12c40e39b2a1a448213691504d9b0e, type: 3}
   CompassMarker: {fileID: 1612225370}
-  BombChance: 25
+  BombDifficulty: 30
   CoinChance: 10
   ItemChance: 5
   EnableBombSight: 0
@@ -3848,6 +3837,8 @@ MonoBehaviour:
       itemFix: 0
       keyTotal: 0
       keyFix: 0
+      difficulty: 0
+      totalDeaths: 0
     enableSight: 0
     hasCompass: 0
     hasDetonator: 0
@@ -3876,6 +3867,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07ea45bdd24d0e4478e27eb1ae6a4700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1395125438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395125433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 391ad4acb57fb2341b490b3df170ebf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HeartAlive: {fileID: 6673331596548420292, guid: a1f53e2b24091e649b13dbc4fb27db03, type: 3}
+  HeartDead: {fileID: 6673331596548420292, guid: aed1bb98817860b47a2d806122653676, type: 3}
+  HeartsParent: {fileID: 1495815596}
 --- !u!1 &1403151217
 GameObject:
   m_ObjectHideFlags: 0
@@ -4000,7 +4006,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1403151220
@@ -4087,6 +4093,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1474061474}
   m_CullTransparentMesh: 1
+--- !u!1 &1495815596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1495815597}
+  m_Layer: 5
+  m_Name: Hearts
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1495815597
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495815596}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 977228024}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.39}
+  m_AnchorMax: {x: 1, y: 0.49}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1531828000
 GameObject:
   m_ObjectHideFlags: 0
@@ -4726,7 +4768,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: LoadScene
         m_Mode: 5
@@ -4944,8 +4986,8 @@ RectTransform:
   m_Father: {fileID: 977228024}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.45}
-  m_AnchorMax: {x: 1, y: 0.55}
+  m_AnchorMin: {x: 0, y: 0.51}
+  m_AnchorMax: {x: 1, y: 0.61}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5638,7 +5680,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347031428}
+      - m_Target: {fileID: 1395125438}
         m_TargetAssemblyTypeName: Menus, Assembly-CSharp
         m_MethodName: ExitGame
         m_Mode: 1

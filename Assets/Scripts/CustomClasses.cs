@@ -58,6 +58,8 @@ public class IntData
     public int itemFix;
     public int keyTotal;
     public int keyFix;
+    public int difficulty;
+    public int totalDeaths;
 
     public IntData()
     {
@@ -69,8 +71,10 @@ public class IntData
         itemFix = 0;
         keyTotal = 0;
         keyFix = 0;
+        difficulty = 0;
+        totalDeaths = 0;
     }
-    public IntData(int CurrentMove, int CurrentHexID, int TotalCoins, int CounterFixObjective, int ItemTotal, int ItemFix, int KeyTotal, int KeyFix)
+    public IntData(int CurrentMove, int CurrentHexID, int TotalCoins, int CounterFixObjective, int ItemTotal, int ItemFix, int KeyTotal, int KeyFix, int Difficulty, int TotalDeaths)
     {
         currentMove = CurrentMove;
         currentHexID = CurrentHexID;
@@ -80,6 +84,8 @@ public class IntData
         itemFix = ItemFix;
         keyTotal = KeyTotal;
         keyFix = KeyFix;
+        difficulty = Difficulty;
+        totalDeaths = TotalDeaths;
     }
 }
 

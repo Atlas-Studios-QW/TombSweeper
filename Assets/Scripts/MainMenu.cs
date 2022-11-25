@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
 {
     [Header("Objects")]
     public GameObject Player;
+    public GameObject Version;
 
     [Header("-----Dev settings")]
     public float[] HexMovement = { 3.9f, 4.5f };
@@ -45,6 +46,8 @@ public class MainMenu : MonoBehaviour
         {
             PlayerPrefs.SetInt("AutoSaveTime", 0);
         }
+
+        Version.GetComponent<TextMeshProUGUI>().text = "V"+Application.version;
     }
 
     private void Update()
