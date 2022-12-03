@@ -28,6 +28,7 @@ public class LevelBuilder : MonoBehaviour
     public GameObject DeathPanel;
     public GameObject WinPanel;
     public GameObject ParticlesParent;
+    public GameObject MainCamera;
 
     [Header("-----Particles")]
     public GameObject Explosion;
@@ -44,6 +45,7 @@ public class LevelBuilder : MonoBehaviour
     public GameObject CompassMarker;
 
     [Header("-----Settings")]
+    public float CameraSpeed = 8;
     public int BombDifficulty = 30;
     public int CoinChance = 8;
     public int ItemChance = 4;
@@ -88,6 +90,8 @@ public class LevelBuilder : MonoBehaviour
 
     private void Update()
     {
+        MainCamera.transform.position = Vector3.MoveTowards(MainCamera.transform.position, Player.transform.position + new Vector3(0, -3, -10), CameraSpeed * Time.deltaTime);
+        
         if (Input.GetKeyDown(KeyCode.Escape) && !DeathPanel.activeInHierarchy)
         {
             PausePanel.SetActive(!PausePanel.activeSelf);
@@ -145,9 +149,8 @@ public class LevelBuilder : MonoBehaviour
         if (addDifficulty && SaveGame.intData.difficulty < BombDifficulty * 1.8 && SaveGame.intData.difficulty < 80)
         {
             SaveGame.intData.difficulty++;
+            print("New Difficulty: "+SaveGame.intData.difficulty);
         }
-
-        print("New Difficulty: "+SaveGame.intData.difficulty);
 
         Room CurrentRoom = null;
         bool Dead = false;
@@ -406,9 +409,9 @@ public class LevelBuilder : MonoBehaviour
         {
             if (SaveGame.intData.itemTotal == 0)
             {
-                ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 50);
+                ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 12.5f);
             }
-            ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 150);
+            ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 87.5f);
             GameObject NewIcon = Instantiate(IconPrefab, IconParent.transform);
             NewIcon.transform.position += new Vector3(0, 150 * SaveGame.intData.itemTotal, 0);
             NewIcon.transform.Find("Icon").GetComponent<Image>().sprite = SaveGame.collectedItems[SaveGame.intData.itemTotal].icon;

@@ -32,13 +32,8 @@ public class SavegameSystem : MonoBehaviour
         string fileContent = reader.ReadToEnd();
         reader.Close();
         if (fileContent.ToCharArray().Length > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        { return true; }
+        else { return false; }
     }
 
     IEnumerator AutoSave(int Interval)
@@ -62,7 +57,7 @@ public class SavegameSystem : MonoBehaviour
         StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         string fileContent = reader.ReadToEnd();
         reader.Close();
-        fileContent = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(SaveGame)));
+        fileContent = JsonUtility.ToJson(SaveGame);
         StreamWriter writer = new StreamWriter(File.OpenWrite(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         writer.Write(fileContent);
         writer.Close();
@@ -75,7 +70,7 @@ public class SavegameSystem : MonoBehaviour
         int SaveGameNumber = PlayerPrefs.GetInt("LatestSaveGame");
         StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         string ReadJson = reader.ReadToEnd();
-        SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(ReadJson)));
+        SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(ReadJson);
 
         reader.Close();
 
@@ -124,16 +119,15 @@ public class SavegameSystem : MonoBehaviour
             SavegameFolder = Application.persistentDataPath + "/Savegames";
             StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
             string ReadJson = reader.ReadToEnd();
-            SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(ReadJson)));
+            SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(ReadJson);
             reader.Close();
 
             ReadData.intData.difficulty = NewDifficulty;
             ReadData.intData.totalDeaths = TotalDeaths;
 
             CheckSavegame(SaveGameNumber);
-            string EncrpytedData = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(ReadData)));
             StreamWriter writer = new StreamWriter(File.OpenWrite(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-            writer.Write(EncrpytedData);
+            writer.Write(ReadData);
             writer.Close();
         }
     }
