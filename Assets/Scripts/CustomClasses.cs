@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System;
+using System.Text;
 
 [System.Serializable]
 public class Item
@@ -123,5 +125,22 @@ public class SaveGameData
         hasCompass = HasCompass;
         hasDetonator = HasDetonator;
         playerPos = PlayerPos;
+    }
+}
+
+public class Encryption
+{
+    public static string Encrypt(string JSON)
+    {
+        byte[] BytesArray = Encoding.UTF8.GetBytes(JSON);
+        string EncryptedJson = Convert.ToBase64String(BytesArray);
+        return EncryptedJson;
+    }
+
+    public static string Decrypt(string EncryptedJSON)
+    {
+        byte[] DecryptedBytes = Convert.FromBase64String(EncryptedJSON);
+        string JSON = Encoding.UTF8.GetString(DecryptedBytes);
+        return JSON;
     }
 }

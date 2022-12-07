@@ -86,6 +86,8 @@ public class LevelBuilder : MonoBehaviour
         {
             Alert($"Objective:\nFind the exit");
         }
+
+        MainCamera.transform.position = Player.transform.position;
     }
 
     private void Update()
@@ -121,7 +123,7 @@ public class LevelBuilder : MonoBehaviour
         }
         else
         {
-            ItemDetails.transform.position = new Vector2(-1000,0);
+            ItemDetails.transform.position = new Vector2(-5000,-5000);
         }
     }
 
@@ -411,12 +413,13 @@ public class LevelBuilder : MonoBehaviour
             {
                 ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 12.5f);
             }
-            ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 87.5f);
+            ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, ItemBox.GetComponent<RectTransform>().sizeDelta.x - 12.5f);
             GameObject NewIcon = Instantiate(IconPrefab, IconParent.transform);
             NewIcon.transform.position += new Vector3(0, 150 * SaveGame.intData.itemTotal, 0);
             NewIcon.transform.Find("Icon").GetComponent<Image>().sprite = SaveGame.collectedItems[SaveGame.intData.itemTotal].icon;
             NewIcon.transform.Find("Icon").parent.name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
             NewIcon.transform.Find("Icon").name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
+
             SaveGame.intData.itemTotal++;
             if (SaveGame.intData.itemTotal == 3)
             {
@@ -490,6 +493,10 @@ public class LevelBuilder : MonoBehaviour
         SaveGame.intData.totalDeaths++;
         GetComponent<SavegameSystem>().FixedValues(NewDifficulty, SaveGame.intData.totalDeaths);
         GetComponent<Menus>().SetDeathHearts(5-SaveGame.intData.totalDeaths);
+        if (SaveGame.intData.totalDeaths == 5)
+        {
+            PlayerPrefs.SetInt("LatestSaveGame", 4);
+        }
         DeathPanel.SetActive(true);
     }
 

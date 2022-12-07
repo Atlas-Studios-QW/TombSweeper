@@ -28,9 +28,7 @@ public class SavegameSystem : MonoBehaviour
         {
             File.Create(SavegameFolder + $"/Save{SaveGameNumber}.txt");
         }
-        StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-        string fileContent = reader.ReadToEnd();
-        reader.Close();
+        string fileContent = File.ReadAllText(SavegameFolder + $"/Save{SaveGameNumber}.txt");
         if (fileContent.ToCharArray().Length > 0)
         { return true; }
         else { return false; }
@@ -54,13 +52,9 @@ public class SavegameSystem : MonoBehaviour
 
         int SaveGameNumber = PlayerPrefs.GetInt("LatestSaveGame");
         CheckSavegame(SaveGameNumber);
-        StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-        string fileContent = reader.ReadToEnd();
-        reader.Close();
-        fileContent = JsonUtility.ToJson(SaveGame);
-        StreamWriter writer = new StreamWriter(File.OpenWrite(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-        writer.Write(fileContent);
-        writer.Close();
+        string fileContent = Encryption.Encrypt(JsonUtility.ToJson(SaveGame));
+        print("SAVING: " + fileContent);
+        File.WriteAllText(SavegameFolder + $"/Save{SaveGameNumber}.txt", fileContent);
         Script.Alert("Saved Game!");
     }
 
@@ -68,11 +62,8 @@ public class SavegameSystem : MonoBehaviour
     {
         SavegameFolder = Application.persistentDataPath + "/Savegames";
         int SaveGameNumber = PlayerPrefs.GetInt("LatestSaveGame");
-        StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-        string ReadJson = reader.ReadToEnd();
+        string ReadJson = Encryption.Decrypt(File.ReadAllText(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
         SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(ReadJson);
-
-        reader.Close();
 
         LevelBuilder Script = GetComponent<LevelBuilder>();
 
@@ -117,18 +108,24 @@ public class SavegameSystem : MonoBehaviour
         if (SaveGameNumber < 4)
         {
             SavegameFolder = Application.persistentDataPath + "/Savegames";
-            StreamReader reader = new StreamReader(File.OpenRead(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-            string ReadJson = reader.ReadToEnd();
+            string ReadJson = Encryption.Decrypt(File.ReadAllText(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
             SaveGameData ReadData = JsonUtility.FromJson<SaveGameData>(ReadJson);
-            reader.Close();
 
             ReadData.intData.difficulty = NewDifficulty;
             ReadData.intData.totalDeaths = TotalDeaths;
 
             CheckSavegame(SaveGameNumber);
-            StreamWriter writer = new StreamWriter(File.OpenWrite(SavegameFolder + $"/Save{SaveGameNumber}.txt"));
-            writer.Write(ReadData);
-            writer.Close();
+            File.WriteAllText(SavegameFolder + $"/Save{SaveGameNumber}.txt", Encryption.Encrypt(JsonUtility.ToJson(ReadData)));
         }
+    }
+
+    public void ResetSavegames()
+    {
+        File.Delete(SavegameFolder + "/Save1.txt");
+        File.Delete(SavegameFolder + "/Save2.txt");
+        File.Delete(SavegameFolder + "/Save3.txt");
+        File.Create(SavegameFolder + "/Save1.txt");
+        File.Create(SavegameFolder + "/Save2.txt");
+        File.Create(SavegameFolder + "/Save3.txt");
     }
 }

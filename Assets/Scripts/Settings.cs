@@ -10,6 +10,7 @@ public class Settings : MonoBehaviour
 {
     public GameObject ViewModeSelector;
     public GameObject IntervalSelector;
+    public GameObject ResetSaves;
     public GameObject Confirmation;
 
     private int ViewMode = 0;
@@ -61,6 +62,10 @@ public class Settings : MonoBehaviour
     {
         PlayerPrefs.SetInt("ViewMode", ViewModeDropDown.value);
         PlayerPrefs.SetInt("AutoSaveTime", int.Parse(IntervalSlider.value.ToString()));
+        if (ResetSaves.GetComponent<Toggle>().isOn)
+        {
+            GetComponent<SavegameSystem>().ResetSavegames();
+        }
         StartCoroutine(Alerter());
     }
 
