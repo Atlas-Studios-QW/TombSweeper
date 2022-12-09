@@ -88,6 +88,8 @@ public class LevelBuilder : MonoBehaviour
         }
 
         MainCamera.transform.position = Player.transform.position;
+
+        Alert("Coin");
     }
 
     private void Update()
@@ -303,7 +305,8 @@ public class LevelBuilder : MonoBehaviour
                         NewRoom.contains = ContainState.Bomb;
                         if (EnableBombSight)
                         {
-                            NewHex.GetComponent<SpriteRenderer>().material.color = new Color(255, 0, 0);
+                            NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().color = new Color(255, 255, 255, 1);
+                            NewHex.transform.Find("Canvas").Find("Icon").GetComponent<Image>().sprite = BombImg;
                         }
                     }
                     else if (Random.Range(0,100) > (100 - CoinChance))
@@ -415,7 +418,7 @@ public class LevelBuilder : MonoBehaviour
             }
             ItemBox.GetComponent<RectTransform>().sizeDelta += new Vector2(0, ItemBox.GetComponent<RectTransform>().sizeDelta.x - 12.5f);
             GameObject NewIcon = Instantiate(IconPrefab, IconParent.transform);
-            NewIcon.transform.position += new Vector3(0, 150 * SaveGame.intData.itemTotal, 0);
+            NewIcon.GetComponent<RectTransform>().anchoredPosition += new Vector2(0, (80 - 12.5f) * SaveGame.intData.itemTotal);
             NewIcon.transform.Find("Icon").GetComponent<Image>().sprite = SaveGame.collectedItems[SaveGame.intData.itemTotal].icon;
             NewIcon.transform.Find("Icon").parent.name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;
             NewIcon.transform.Find("Icon").name = SaveGame.collectedItems[SaveGame.intData.itemTotal].name;

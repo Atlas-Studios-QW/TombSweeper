@@ -3744,6 +3744,7 @@ GameObject:
   - component: {fileID: 1395125436}
   - component: {fileID: 1395125437}
   - component: {fileID: 1395125438}
+  - component: {fileID: 1395125439}
   m_Layer: 0
   m_Name: ScriptHolder
   m_TagString: Untagged
@@ -3883,6 +3884,18 @@ MonoBehaviour:
   HeartAlive: {fileID: 6673331596548420292, guid: a1f53e2b24091e649b13dbc4fb27db03, type: 3}
   HeartDead: {fileID: 6673331596548420292, guid: aed1bb98817860b47a2d806122653676, type: 3}
   HeartsParent: {fileID: 1495815596}
+--- !u!114 &1395125439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395125433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7711963f0dc40944c859f1ce11ee6ae1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1403151217
 GameObject:
   m_ObjectHideFlags: 0
