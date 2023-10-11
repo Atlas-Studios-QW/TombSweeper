@@ -1,10 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://dp4tedtpv3uud"]
+[gd_scene load_steps=3 format=3 uid="uid://dp4tedtpv3uud"]
+
+[ext_resource type="Script" path="res://Scripts/MovementController.gd" id="1_846f4"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_botlt"]
 
 [node name="Player" type="Node2D"]
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+script = ExtResource("1_846f4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 shape = SubResource("CircleShape2D_botlt")
@@ -12,3 +15,25 @@ shape = SubResource("CircleShape2D_botlt")
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(3, 3)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -38.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "test"

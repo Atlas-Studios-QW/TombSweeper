@@ -1,7 +1,7 @@
 extends TileMap
 
 func _ready():
-	var mapSize = get_node("/root/GameData")
+	var mapSize = get_node("/root/GameData").get("mapSize")
 	generate_cells(calculate_coords(mapSize), false)
 	pass
 
