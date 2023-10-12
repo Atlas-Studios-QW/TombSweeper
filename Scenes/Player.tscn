@@ -1,20 +1,23 @@
-[gd_scene load_steps=3 format=3 uid="uid://dp4tedtpv3uud"]
+[gd_scene load_steps=5 format=3 uid="uid://dp4tedtpv3uud"]
 
 [ext_resource type="Script" path="res://Scripts/MovementController.gd" id="1_846f4"]
+[ext_resource type="Script" path="res://Scripts/MoveButton.gd" id="2_2dtfx"]
+[ext_resource type="Texture2D" uid="uid://bhlgrmtf46d8t" path="res://Sprites/Character.png" id="2_3dwxy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_botlt"]
 
 [node name="Player" type="Node2D"]
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+[node name="Body" type="CharacterBody2D" parent="."]
 script = ExtResource("1_846f4")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+[node name="Collision" type="CollisionShape2D" parent="Body"]
 shape = SubResource("CircleShape2D_botlt")
 
-[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+[node name="Sprite" type="Sprite2D" parent="Body"]
+texture = ExtResource("2_3dwxy")
 
-[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+[node name="Camera" type="Camera2D" parent="Body"]
 zoom = Vector2(3, 3)
 
 [node name="Control" type="Control" parent="."]
@@ -34,6 +37,7 @@ offset_left = 16.0
 offset_right = 48.0
 offset_bottom = 32.0
 grow_horizontal = 2
+script = ExtResource("2_2dtfx")
 
 [node name="Button2" type="Button" parent="Control"]
 layout_mode = 1
@@ -48,6 +52,8 @@ offset_right = -16.0
 offset_bottom = 16.0
 grow_horizontal = 0
 grow_vertical = 2
+script = ExtResource("2_2dtfx")
+direction = 1
 
 [node name="Button3" type="Button" parent="Control"]
 layout_mode = 1
@@ -62,6 +68,8 @@ offset_right = 48.0
 offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("2_2dtfx")
+direction = 2
 
 [node name="Button4" type="Button" parent="Control"]
 layout_mode = 1
@@ -76,6 +84,8 @@ offset_right = -16.0
 offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("2_2dtfx")
+direction = 3
 
 [node name="Button5" type="Button" parent="Control"]
 layout_mode = 1
@@ -87,6 +97,8 @@ offset_top = -15.5
 offset_right = 48.0
 offset_bottom = 16.5
 grow_vertical = 2
+script = ExtResource("2_2dtfx")
+direction = 4
 
 [node name="Button6" type="Button" parent="Control"]
 layout_mode = 1
@@ -97,3 +109,5 @@ offset_left = -48.0
 offset_right = -16.0
 offset_bottom = 32.0
 grow_horizontal = 2
+script = ExtResource("2_2dtfx")
+direction = 5

@@ -17,9 +17,10 @@ func calculate_coords(mapSize: Vector2i):
 func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 	for coords in coordsList:
 		if (!allowOverwrite and get_cell_tile_data(0, coords) != null):
-			print("Dont overwrite");
 			return
 			
 		set_cell(0, coords, 0, Vector2i(1,0), 0)
-		print("Cell set!")
 	pass
+
+func GetGlobalNeighbor(location: Vector2):
+	return
