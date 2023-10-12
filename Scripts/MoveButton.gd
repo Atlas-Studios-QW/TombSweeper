@@ -4,7 +4,7 @@ var movementController
 @export var direction: int = 0
 
 func _ready():
-	movementController = get_node("../../Body")
+	movementController = get_node("../../")
 	pass
 
 func _pressed():

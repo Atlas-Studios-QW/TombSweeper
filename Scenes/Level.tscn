@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bj4dm0lpg5yh1"]
 
 [ext_resource type="PackedScene" uid="uid://dp4tedtpv3uud" path="res://Scenes/Player.tscn" id="1_kpr4o"]
-[ext_resource type="Texture2D" uid="uid://biuafi35xx1yj" path="res://Tilesets/TileSet.png" id="2_o3uiy"]
+[ext_resource type="Texture2D" uid="uid://biuafi35xx1yj" path="res://TileSets/TileSet.png" id="2_o3uiy"]
 [ext_resource type="Script" path="res://Scripts/TileGeneration.gd" id="2_qwmit"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_acio6"]
@@ -27,4 +27,4 @@ format = 2
 script = ExtResource("2_qwmit")
 
 [node name="Player" parent="." instance=ExtResource("1_kpr4o")]
-position = Vector2(0, -16)
+position = Vector2(32, 32)

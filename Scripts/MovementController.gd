@@ -3,26 +3,32 @@ extends CharacterBody2D
 var playerSpeed
 var tileMap
 
+var fromPosition = Vector2(0,0)
 var nextPosition = Vector2(0,0)
-var isMoving = false;
+var movement = 1.0;
 
 func _ready():
 	playerSpeed = get_node("/root/GameData").get("playerSpeed")
-	tileMap = get_node("../../World/TileMap")
+	tileMap = get_node("/root/Level/World/TileMap")
 	pass
 
 func _process(delta):
-	isMoving = position != nextPosition
-	
-	if (isMoving):
-		var positionDifference = nextPosition - position
-		var vector = positionDifference * delta * playerSpeed
-		position += vector
+	if (movement < 1):
+		movement += delta * playerSpeed
+		movement = minf(movement,1.0)
+		position = fromPosition.lerp(nextPosition, movement)
 	pass
 
 func StartMove(direction: int = 0):
-	if (isMoving):
-		pass
+	if (movement < 1):
+		return
 	
-	var nextPosition = tileMap.GetGlobalNeighbor(position, direction)
+	fromPosition = position
+	nextPosition = tileMap.GetGlobalNeighbor(position, direction)
+	
+	#Offset to center player
+	nextPosition.y += 16
+	
+	movement = 0.0
+	print(nextPosition)
 	pass

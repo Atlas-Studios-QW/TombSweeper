@@ -20,7 +20,7 @@ texture = ExtResource("2_3dwxy")
 [node name="Camera" type="Camera2D" parent="Body"]
 zoom = Vector2(3, 3)
 
-[node name="MoveControl" type="Control" parent="Body"]
+[node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
 offset_left = -96.0
@@ -28,7 +28,7 @@ offset_top = -64.0
 offset_right = 96.0
 offset_bottom = 64.0
 
-[node name="Button1" type="Button" parent="Body/MoveControl"]
+[node name="Button1" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -39,7 +39,7 @@ offset_bottom = 32.0
 grow_horizontal = 2
 script = ExtResource("2_2dtfx")
 
-[node name="Button2" type="Button" parent="Body/MoveControl"]
+[node name="Button2" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -55,7 +55,7 @@ grow_vertical = 2
 script = ExtResource("2_2dtfx")
 direction = 1
 
-[node name="Button3" type="Button" parent="Body/MoveControl"]
+[node name="Button3" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -71,7 +71,7 @@ grow_vertical = 0
 script = ExtResource("2_2dtfx")
 direction = 2
 
-[node name="Button4" type="Button" parent="Body/MoveControl"]
+[node name="Button4" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -87,7 +87,7 @@ grow_vertical = 0
 script = ExtResource("2_2dtfx")
 direction = 3
 
-[node name="Button5" type="Button" parent="Body/MoveControl"]
+[node name="Button5" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
@@ -100,7 +100,7 @@ grow_vertical = 2
 script = ExtResource("2_2dtfx")
 direction = 4
 
-[node name="Button6" type="Button" parent="Body/MoveControl"]
+[node name="Button6" type="Button" parent="Control"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
