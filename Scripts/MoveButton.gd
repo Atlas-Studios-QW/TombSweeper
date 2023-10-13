@@ -10,3 +10,7 @@ func _ready():
 func _pressed():
 	movementController.StartMove(direction)
 	pass
+
+func SetText(newLabel: String = ""):
+	text = newLabel
+	pass

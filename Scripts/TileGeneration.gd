@@ -1,9 +1,16 @@
 extends TileMap
 
 var neighborDirectionIds
+var difficulty
+var bombLocations
+
+var rng
 
 func _ready():
 	neighborDirectionIds = get_node("/root/GameData").get("neighborDirectionIds")
+	difficulty = get_node("/root/GameData").get("difficulty")
+	bombLocations = get_node("/root/GameData").get("bombLocations")
+	rng = RandomNumberGenerator.new()
 	var mapSize = get_node("/root/GameData").get("mapSize")
 	generate_cells(calculate_coords(mapSize), false)
 	pass
@@ -23,6 +30,10 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 			return
 			
 		set_cell(0, coords, 0, Vector2i(1,0), 0)
+		
+		var chance = rng.randf_range(0.0,100.0)
+		if (chance <= difficulty):
+			bombLocations.append(coords)
 	pass
 
 func GetGlobalNeighbor(location: Vector2, direction: int = 0):
@@ -30,3 +41,8 @@ func GetGlobalNeighbor(location: Vector2, direction: int = 0):
 	var nextCell = get_neighbor_cell(currentCell, neighborDirectionIds[direction])
 	var nextGlobalCell = map_to_local(nextCell)
 	return nextGlobalCell
+
+func GetGlobalPos(coords: Vector2i):
+	var globalPos = map_to_local(coords)
+	globalPos.y += 16
+	return globalPos
