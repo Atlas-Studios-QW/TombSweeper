@@ -1,7 +1,7 @@
 extends Node
 
 @export var mapSize = Vector2i(10,10)
-@export var difficulty = Difficulty.Hard
+@export var difficulty = Difficulty.Easy
 
 @export var spawnPoint = Vector2i(5,5)
 @export var playerSpeed = 2.0
