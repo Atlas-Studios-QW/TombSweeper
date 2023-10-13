@@ -1,10 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://dp4tedtpv3uud"]
+[gd_scene load_steps=7 format=3 uid="uid://dp4tedtpv3uud"]
 
 [ext_resource type="Script" path="res://Scripts/MovementController.gd" id="1_846f4"]
 [ext_resource type="Script" path="res://Scripts/MoveButton.gd" id="2_2dtfx"]
 [ext_resource type="Texture2D" uid="uid://bhlgrmtf46d8t" path="res://Sprites/Character.png" id="2_3dwxy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_botlt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ctamo"]
+bg_color = Color(0, 0, 0, 0.392157)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="Theme" id="Theme_2cx08"]
+Label/styles/normal = SubResource("StyleBoxFlat_ctamo")
 
 [node name="Player" type="Node2D"]
 
@@ -19,6 +29,36 @@ texture = ExtResource("2_3dwxy")
 
 [node name="Camera" type="Camera2D" parent="Body"]
 zoom = Vector2(3, 3)
+
+[node name="OtherUI" type="Control" parent="Body"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -90.0
+offset_right = 160.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+theme = SubResource("Theme_2cx08")
+
+[node name="CurrentCellLabel" type="Label" parent="Body/OtherUI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -10.0
+offset_right = 10.0
+offset_bottom = 26.0
+grow_horizontal = 2
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MoveControl" type="Control" parent="Body"]
 layout_mode = 3

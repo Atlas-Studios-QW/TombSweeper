@@ -2,14 +2,16 @@ extends TileMap
 
 var neighborDirectionIds
 var difficulty
-var bombLocations
+var bombCoords
+var exploredCoords
 
 var rng
 
 func _ready():
 	neighborDirectionIds = get_node("/root/GameData").get("neighborDirectionIds")
 	difficulty = get_node("/root/GameData").get("difficulty")
-	bombLocations = get_node("/root/GameData").get("bombLocations")
+	bombCoords = get_node("/root/GameData").get("bombCoords")
+	exploredCoords = get_node("/root/GameData").get("exploredCoords")
 	rng = RandomNumberGenerator.new()
 	var mapSize = get_node("/root/GameData").get("mapSize")
 	generate_cells(calculate_coords(mapSize), false)
@@ -27,13 +29,13 @@ func calculate_coords(mapSize: Vector2i):
 func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 	for coords in coordsList:
 		if (!allowOverwrite and get_cell_tile_data(0, coords) != null):
-			return
+			continue
 		
 		var tile = 0
 		
 		var chance = rng.randf_range(0.0,100.0)
 		if (chance <= difficulty):
-			bombLocations.append(coords)
+			bombCoords.append(coords)
 			tile = 1
 			
 		set_cell(0, coords, 0, Vector2i(tile,0), 0)
@@ -48,16 +50,26 @@ func GetNeighbor(location: Vector2, direction: int = 0, global: bool = true):
 	return nextGlobalCell
 
 func GetGlobalPos(coords: Vector2i):
-	var globalPos = map_to_local(coords)
-	return globalPos
+	return map_to_local(coords)
+	
+func GetCellCoords(location: Vector2):
+	return local_to_map(location)
 
-func CalculateIndicatorForCell(coords: Vector2i):
+func CalculateIndicatorForCell(coords: Vector2i, checkExplored: bool = true):
+	if (!exploredCoords.has(coords) and checkExplored):
+		return "?"
+	
 	var surroundingBombs = 0
-	print(bombLocations)
-	print("Cell: " + str(coords))
 	for neighbor in get_surrounding_cells(coords):
-		print("Neighbor: " + str(neighbor))
-		if (bombLocations.has(neighbor)):
+		if (bombCoords.has(neighbor)):
 			surroundingBombs += 1
-	print("Found: " + str(surroundingBombs))
 	return surroundingBombs
+
+func OnEnterCell(location: Vector2):
+	var enteredCell = local_to_map(location)
+	if (bombCoords.has(enteredCell)):
+		print("GAME OVER")
+	else:
+		print("Safe cell")
+		exploredCoords.append(enteredCell)
+	pass

@@ -25,6 +25,7 @@ sources/0 = SubResource("TileSetAtlasSource_acio6")
 [node name="TileMap" type="TileMap" parent="World"]
 tile_set = SubResource("TileSet_g6qlw")
 format = 2
+layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
 script = ExtResource("2_qwmit")
 
 [node name="Player" parent="." instance=ExtResource("1_kpr4o")]
