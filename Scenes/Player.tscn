@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://dp4tedtpv3uud"]
+[gd_scene load_steps=8 format=3 uid="uid://dp4tedtpv3uud"]
 
 [ext_resource type="Script" path="res://Scripts/MovementController.gd" id="1_846f4"]
 [ext_resource type="Script" path="res://Scripts/MoveButton.gd" id="2_2dtfx"]
 [ext_resource type="Texture2D" uid="uid://bhlgrmtf46d8t" path="res://Sprites/Character.png" id="2_3dwxy"]
+[ext_resource type="Theme" uid="uid://jsij8ngisnd3" path="res://Themes/UITheme.tres" id="3_ovw3v"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_botlt"]
 
@@ -56,6 +57,7 @@ offset_left = -10.0
 offset_right = 10.0
 offset_bottom = 26.0
 grow_horizontal = 2
+theme = ExtResource("3_ovw3v")
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -77,6 +79,7 @@ offset_left = 16.0
 offset_right = 48.0
 offset_bottom = 32.0
 grow_horizontal = 2
+theme = ExtResource("3_ovw3v")
 script = ExtResource("2_2dtfx")
 
 [node name="Button2" type="Button" parent="Body/MoveControl"]
@@ -92,6 +95,7 @@ offset_right = -16.0
 offset_bottom = 16.0
 grow_horizontal = 0
 grow_vertical = 2
+theme = ExtResource("3_ovw3v")
 script = ExtResource("2_2dtfx")
 direction = 1
 
@@ -108,6 +112,7 @@ offset_right = 48.0
 offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+theme = ExtResource("3_ovw3v")
 script = ExtResource("2_2dtfx")
 direction = 2
 
@@ -124,6 +129,7 @@ offset_right = -16.0
 offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+theme = ExtResource("3_ovw3v")
 script = ExtResource("2_2dtfx")
 direction = 3
 
@@ -137,6 +143,7 @@ offset_top = -15.5
 offset_right = 48.0
 offset_bottom = 16.5
 grow_vertical = 2
+theme = ExtResource("3_ovw3v")
 script = ExtResource("2_2dtfx")
 direction = 4
 
@@ -149,5 +156,6 @@ offset_left = -48.0
 offset_right = -16.0
 offset_bottom = 32.0
 grow_horizontal = 2
+theme = ExtResource("3_ovw3v")
 script = ExtResource("2_2dtfx")
 direction = 5
