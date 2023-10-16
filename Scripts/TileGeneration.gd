@@ -37,9 +37,7 @@ func calculate_coords(mapSize: Vector2i):
 	return calculatedCoords
 
 func generate_cells(coordsList: Array, allowOverwrite: bool = true):
-	var i = -1
 	for coords in coordsList:
-		i += 1
 		if (!allowOverwrite and get_cell_tile_data(0, coords) != null):
 			continue
 		
@@ -60,7 +58,6 @@ func setup_cell_labels(coordsList: Array):
 		var globalLocation = map_to_local(coords)
 		newCellLabel.position = globalLocation
 		cellLabels[coords] = newCellLabel
-	print(cellLabels)
 	pass
 
 func update_cell_label(coords: Vector2i):
