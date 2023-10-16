@@ -3,24 +3,25 @@ extends CharacterBody2D
 var playerSpeed
 var tileMap
 
-var moveButtons
-var currentCellLabel
+var moveButtonsParent
+var cellIndicators
 
 var fromPosition = Vector2(0,0)
 var nextPosition = Vector2(0,0)
+var positionDifference = Vector2(0,0)
 var movement = 1.0;
 
 func _ready():
 	playerSpeed = get_node("/root/GameData").get("playerSpeed")
 	tileMap = get_node("/root/Level/World/TileMap")
-	moveButtons = get_node("MoveControl").get_children()
-	currentCellLabel = get_node("OtherUI/CurrentCellLabel")
+	moveButtonsParent = get_node("MoveControl")
 	var spawnPoint = get_node("/root/GameData").get("spawnPoint")
 	
-	position = tileMap.GetGlobalPos(spawnPoint) + Vector2(0,16)
+	position = tileMap.map_to_local(spawnPoint)
 	fromPosition = position
 	nextPosition = position
-	UpdateCellIndicators()
+	
+	tileMap.on_enter_cell(tileMap.local_to_map(position))
 	pass
 
 func _process(delta):
@@ -32,31 +33,20 @@ func _process(delta):
 	else:
 		if (movement != 2.0):
 			movement = 2.0
-			moveButtons[0].get_parent().show()
-			tileMap.OnEnterCell(position + Vector2(32,32))
+			moveButtonsParent.show()
+			tileMap.on_enter_cell(tileMap.local_to_map(position))
 	pass
 
-func StartMove(direction: int = 0):
+func start_move(direction: int = 0):
 	if (movement < 1):
 		return
 	
-	moveButtons[0].get_parent().hide()
+	moveButtonsParent.hide()
 	
 	fromPosition = position
-	nextPosition = tileMap.GetNeighbor(position, direction)
-	nextPosition.y += 16
+	nextPosition = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
 	
-	UpdateCellIndicators()
+	positionDifference = nextPosition - fromPosition
 	
 	movement = 0.0
-	pass
-
-func UpdateCellIndicators():
-	var currentCell = tileMap.GetCellCoords(nextPosition + Vector2(32,32))
-	currentCellLabel.text = str(tileMap.CalculateIndicatorForCell(currentCell, false))
-	
-	for button in moveButtons:
-		var buttonCell = tileMap.GetNeighbor(nextPosition + Vector2(32,32), button.direction, false)
-		var indicatorValue = tileMap.CalculateIndicatorForCell(buttonCell)
-		button.SetText(str(indicatorValue))
 	pass

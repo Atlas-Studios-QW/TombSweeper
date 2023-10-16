@@ -8,9 +8,5 @@ func _ready():
 	pass
 
 func _pressed():
-	movementController.StartMove(direction)
-	pass
-
-func SetText(newLabel: String = ""):
-	text = newLabel
+	movementController.start_move(direction)
 	pass

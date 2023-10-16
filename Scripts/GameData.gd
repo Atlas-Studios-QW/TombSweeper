@@ -11,6 +11,14 @@ extends Node
 @export var bombCoords = []
 @export var exploredCoords = []
 
+@export var cellLabels = {}
+@export var cellLabelsParent: Control
+
+func _ready():
+	cellLabelsParent = get_node("/root/Level/Player/CellLabels")
+	print(cellLabelsParent)
+	pass
+
 #difficulty is in %
 enum Difficulty {
 	Easy = 15,

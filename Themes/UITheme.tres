@@ -1,11 +1,17 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://jsij8ngisnd3"]
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://jsij8ngisnd3"]
 
-[ext_resource type="StyleBox" uid="uid://7eag5jcxgcg8" path="res://Themes/BoxStyleFlat.tres" id="1_unvyl"]
+[ext_resource type="StyleBox" uid="uid://7eag5jcxgcg8" path="res://Themes/BaseStyle.tres" id="1_o3n3n"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tx3tg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x0l2r"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_huq1n"]
 
 [resource]
-Button/styles/disabled = ExtResource("1_unvyl")
-Button/styles/focus = ExtResource("1_unvyl")
-Button/styles/hover = ExtResource("1_unvyl")
-Button/styles/normal = ExtResource("1_unvyl")
-Button/styles/pressed = ExtResource("1_unvyl")
-Label/styles/normal = ExtResource("1_unvyl")
+Button/styles/disabled = SubResource("StyleBoxEmpty_tx3tg")
+Button/styles/focus = SubResource("StyleBoxEmpty_x0l2r")
+Button/styles/hover = ExtResource("1_o3n3n")
+Button/styles/normal = SubResource("StyleBoxEmpty_huq1n")
+Button/styles/pressed = ExtResource("1_o3n3n")
+Label/styles/normal = ExtResource("1_o3n3n")
