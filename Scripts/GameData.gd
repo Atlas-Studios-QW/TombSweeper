@@ -1,7 +1,7 @@
 extends Node
 
 @export var mapSize = Vector2i(20,20)
-@export var difficulty = Difficulty.Easy
+@export var difficulty = Difficulty.Normal
 
 @export var spawnPoint = Vector2i(5,5)
 @export var playerSpeed = 2.0
@@ -14,6 +14,11 @@ extends Node
 
 @export var cellLabels = {}
 @export var cellLabelsParent: Control
+
+@export var collectedItems = {
+	"Key": 0,
+	"Coin": 0
+}
 
 func _ready():
 	cellLabelsParent = get_node("/root/Level/Player/CellLabels")
@@ -29,7 +34,7 @@ enum Difficulty {
 
 var roomTiles = {
 	"Normal": Vector2i(0,0),
-	"Bomb": Vector2i(0,1)
+	"Bomb": Vector2i(1,0)
 }
 
 var itemTiles = {

@@ -13,7 +13,7 @@ var movement = 1.0;
 
 func _ready():
 	playerSpeed = get_node("/root/GameData").get("playerSpeed")
-	tileMap = get_node("/root/Level/World/TileMap")
+	tileMap = get_node("/root/Level/World/RoomsMap")
 	moveButtonsParent = get_node("MoveControl")
 	var spawnPoint = get_node("/root/GameData").get("spawnPoint")
 	

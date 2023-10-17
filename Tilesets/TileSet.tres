@@ -1,0 +1,27 @@
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://bara7vqr2xjdb"]
+
+[ext_resource type="Texture2D" uid="uid://biuafi35xx1yj" path="res://Tilesets/RoomsSet.png" id="1_rb1xj"]
+[ext_resource type="Texture2D" uid="uid://7epx7bbk74wd" path="res://Tilesets/ItemsSet.png" id="2_lamcn"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_acio6"]
+texture = ExtResource("1_rb1xj")
+texture_region_size = Vector2i(64, 64)
+0:0/next_alternative_id = 2
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lj1ks"]
+texture = ExtResource("2_lamcn")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[resource]
+tile_shape = 3
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_acio6")
+sources/1 = SubResource("TileSetAtlasSource_lj1ks")

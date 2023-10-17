@@ -1,5 +1,7 @@
 extends TileMap
 
+@export var itemsMap: TileMap
+
 var neighborDirectionIds
 var difficulty
 var mapSize
@@ -14,6 +16,8 @@ var exploredCoords
 var cellLabels
 var cellLabelsParent
 var cellLabelPrefab
+
+var collectedItems
 
 var rng
 
@@ -30,6 +34,8 @@ func _ready():
 	itemCoords = gameData.get("itemCoords")
 	bombCoords = gameData.get("bombCoords")
 	exploredCoords = gameData.get("exploredCoords")
+	
+	collectedItems = gameData.get("collectedItems")
 	
 	cellLabelPrefab = preload("res://Prefabs/UI/CellLabel.tscn")
 	cellLabels = gameData.get("cellLabels")
@@ -60,13 +66,18 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 		var tile = "Normal"
 		
 		var chance = rng.randf_range(0.0,100.0)
-		if (chance * 2 <= difficulty):
+		if (!check_bounds(mapSize, coords)):
+			bombCoords.append(coords)
+			tile = "Bomb"
+		elif (chance <= difficulty * 0.1):
 			itemCoords[coords] = "Coin"
-		elif (chance <= difficulty || !check_bounds(mapSize, coords)):
+		elif (chance <= difficulty):
 			bombCoords.append(coords)
 			tile = "Bomb"
 			
-		set_cell(0, coords, 0, roomTiles[tile], 0)
+		set_cell(0, coords, 0, roomTiles[tile])
+	
+	print (itemCoords)
 	pass
 
 func check_bounds(size: Vector2, coords: Vector2):
@@ -83,6 +94,8 @@ func setup_cell_labels(coordsList: Array):
 	pass
 
 func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
+	if (itemCoords.has(coords)):
+		itemsMap.set_cell(0, coords, 1, itemTiles[itemCoords[coords]])
 	
 	var newIndicator = calculate_indicator(coords, false)
 	if (newIndicator != "" or !updateRecursive):
@@ -120,8 +133,15 @@ func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	return indicatorText
 
 func on_enter_cell(coords: Vector2i):
+	if (itemCoords.has(coords)):
+		print("Found item: " + itemCoords[coords])
+		collectedItems[itemCoords[coords]] += 1
+		itemsMap.set_cell(0, coords, -1)
+		itemCoords.erase(coords)
+	
 	if (bombCoords.has(coords)):
 		print("GAME OVER")
+		print("Total coins: " + str(collectedItems["Coin"]))
 	else:
 		print("Safe cell")
 		exploredCoords.append(coords)

@@ -1,41 +1,23 @@
-[gd_scene load_steps=8 format=3 uid="uid://bj4dm0lpg5yh1"]
+[gd_scene load_steps=4 format=3 uid="uid://bj4dm0lpg5yh1"]
 
-[ext_resource type="Texture2D" uid="uid://biuafi35xx1yj" path="res://Tilesets/RoomsSet.png" id="1_5evhm"]
-[ext_resource type="Texture2D" uid="uid://7epx7bbk74wd" path="res://Tilesets/ItemsSet.png" id="2_jsppu"]
+[ext_resource type="TileSet" uid="uid://bara7vqr2xjdb" path="res://Tilesets/TileSet.tres" id="1_g422t"]
 [ext_resource type="Script" path="res://Scripts/TileGeneration.gd" id="2_xq52i"]
 [ext_resource type="PackedScene" uid="uid://dp4tedtpv3uud" path="res://Prefabs/Player.tscn" id="3_5rr3l"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_acio6"]
-texture = ExtResource("1_5evhm")
-texture_region_size = Vector2i(64, 64)
-0:0/next_alternative_id = 2
-0:0/0 = 0
-1:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lj1ks"]
-texture = ExtResource("2_jsppu")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
-1:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_g6qlw"]
-tile_shape = 3
-tile_size = Vector2i(64, 64)
-sources/0 = SubResource("TileSetAtlasSource_acio6")
-sources/1 = SubResource("TileSetAtlasSource_lj1ks")
 
 [node name="Level" type="Node2D"]
 
 [node name="World" type="Node2D" parent="."]
 
-[node name="RoomsMap" type="TileMap" parent="World"]
-tile_set = SubResource("TileSet_g6qlw")
+[node name="RoomsMap" type="TileMap" parent="World" node_paths=PackedStringArray("itemsMap")]
+tile_set = ExtResource("1_g422t")
 format = 2
 layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
 script = ExtResource("2_xq52i")
+itemsMap = NodePath("../ItemsMap")
+
+[node name="ItemsMap" type="TileMap" parent="World"]
+tile_set = ExtResource("1_g422t")
+format = 2
+layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_5rr3l")]
