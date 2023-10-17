@@ -1,13 +1,14 @@
 extends Node
 
-@export var mapSize = Vector2i(10,10)
-@export var difficulty = Difficulty.Hard
+@export var mapSize = Vector2i(20,20)
+@export var difficulty = Difficulty.Easy
 
 @export var spawnPoint = Vector2i(5,5)
 @export var playerSpeed = 2.0
 
 @export var neighborDirectionIds = [14, 0, 2, 6, 8, 10]
 
+@export var itemCoords = {}
 @export var bombCoords = []
 @export var exploredCoords = []
 
@@ -21,7 +22,17 @@ func _ready():
 
 #difficulty is in %
 enum Difficulty {
-	Easy = 15,
-	Normal = 25,
-	Hard = 35
+	Easy = 20,
+	Normal = 30,
+	Hard = 40
+}
+
+var roomTiles = {
+	"Normal": Vector2i(0,0),
+	"Bomb": Vector2i(0,1)
+}
+
+var itemTiles = {
+	"Key": Vector2i(0,0),
+	"Coin": Vector2i(1,0)
 }

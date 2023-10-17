@@ -2,37 +2,53 @@ extends TileMap
 
 var neighborDirectionIds
 var difficulty
+var mapSize
+
+var roomTiles
+var itemTiles
+
+var itemCoords
 var bombCoords
 var exploredCoords
+
 var cellLabels
 var cellLabelsParent
+var cellLabelPrefab
+
 var rng
 
 func _ready():
 	var gameData = get_node("/root/GameData");
 	
 	neighborDirectionIds = gameData.get("neighborDirectionIds")
+	roomTiles = gameData.get("roomTiles")
+	itemTiles = gameData.get("itemTiles")
+	
 	difficulty = gameData.get("difficulty")
+	mapSize = gameData.get("mapSize")
+	
+	itemCoords = gameData.get("itemCoords")
 	bombCoords = gameData.get("bombCoords")
 	exploredCoords = gameData.get("exploredCoords")
+	
+	cellLabelPrefab = preload("res://Prefabs/UI/CellLabel.tscn")
 	cellLabels = gameData.get("cellLabels")
 	cellLabelsParent = gameData.get("cellLabelsParent")
-	var mapSize = gameData.get("mapSize")
 	
 	rng = RandomNumberGenerator.new()
 	
-	var mapCoords = calculate_coords(mapSize)
+	var mapCoords = calculate_coords(4)
 	
 	generate_cells(mapCoords, false)
 	setup_cell_labels(mapCoords)
 	pass
 
-func calculate_coords(mapSize: Vector2i):
+func calculate_coords(borderSize: int = 0):
 	var calculatedCoords = []
 	
-	for x in mapSize[0]:
-		for y in mapSize[1]:
-			calculatedCoords.append(Vector2i(x,y))
+	for x in mapSize[0] + borderSize * 2:
+		for y in mapSize[1] + borderSize * 2:
+			calculatedCoords.append(Vector2i(x - borderSize,y - borderSize))
 			
 	return calculatedCoords
 
@@ -41,27 +57,45 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 		if (!allowOverwrite and get_cell_tile_data(0, coords) != null):
 			continue
 		
-		var tile = 0
+		var tile = "Normal"
 		
 		var chance = rng.randf_range(0.0,100.0)
-		if (chance <= difficulty):
+		if (chance * 2 <= difficulty):
+			itemCoords[coords] = "Coin"
+		elif (chance <= difficulty || !check_bounds(mapSize, coords)):
 			bombCoords.append(coords)
-			tile = 1
+			tile = "Bomb"
 			
-		set_cell(0, coords, 0, Vector2i(tile,0), 0)
+		set_cell(0, coords, 0, roomTiles[tile], 0)
 	pass
+
+func check_bounds(size: Vector2, coords: Vector2):
+	var outBounds = coords[0] > size[0] or coords[0] < 0 or coords[1] > size[1] or coords[1] < 0
+	return !outBounds
 
 func setup_cell_labels(coordsList: Array):
 	for coords in coordsList:
-		var newCellLabel = Label.new()
-		cellLabelsParent.add_child(newCellLabel)
+		cellLabelsParent.add_child(cellLabelPrefab.instantiate())
+		var newCellLabel = cellLabelsParent.get_child(cellLabelsParent.get_child_count() - 1)
 		var globalLocation = map_to_local(coords)
-		newCellLabel.position = globalLocation
+		newCellLabel.position = globalLocation - Vector2(16,16)
 		cellLabels[coords] = newCellLabel
 	pass
 
-func update_cell_label(coords: Vector2i):
-	cellLabels[coords].text = str(calculate_indicator(coords, false))
+func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
+	
+	var newIndicator = calculate_indicator(coords, false)
+	if (newIndicator != "" or !updateRecursive):
+		cellLabels[coords].text = newIndicator
+		return
+	
+	var neighbors = get_surrounding_cells(coords)
+	
+	for neighbor in neighbors:
+		if (!exploredCoords.has(neighbor)):
+			exploredCoords.append(neighbor)
+			update_cell_label(neighbor, true)
+	
 	pass
 
 func get_neighbor(coords: Vector2i, direction: int = 0, global: bool = true):
@@ -73,13 +107,17 @@ func get_neighbor(coords: Vector2i, direction: int = 0, global: bool = true):
 
 func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	if (!exploredCoords.has(coords) and checkExplored):
-		return "?"
+		return ""
 	
 	var surroundingBombs = 0
 	for neighbor in get_surrounding_cells(coords):
 		if (bombCoords.has(neighbor)):
 			surroundingBombs += 1
-	return surroundingBombs
+	
+	var indicatorText = ""
+	if (surroundingBombs > 0):
+		indicatorText = str(surroundingBombs)
+	return indicatorText
 
 func on_enter_cell(coords: Vector2i):
 	if (bombCoords.has(coords)):
@@ -87,5 +125,5 @@ func on_enter_cell(coords: Vector2i):
 	else:
 		print("Safe cell")
 		exploredCoords.append(coords)
-		update_cell_label(coords)
+		update_cell_label(coords, true)
 	pass
