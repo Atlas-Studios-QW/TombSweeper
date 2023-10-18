@@ -37,7 +37,22 @@ func _process(delta):
 			tileMap.on_enter_cell(tileMap.local_to_map(position))
 	pass
 
-func start_move(direction: int = 0):
+func _input(event):
+	var mouseDirection = get_global_mouse_position().angle_to_point(position)
+	var direction = roundf(rad_to_deg(mouseDirection) / 60 + 4)
+	
+	if (direction > 5):
+		direction = fmod(direction, 6.0)
+
+	if (event is InputEventMouseButton and event.pressed):
+		match event.button_index:
+			MOUSE_BUTTON_LEFT:
+				start_move(direction)
+			MOUSE_BUTTON_RIGHT:
+				set_flag(direction)
+	pass
+
+func start_move(direction: int):
 	if (movement < 1):
 		return
 	
@@ -46,7 +61,11 @@ func start_move(direction: int = 0):
 	fromPosition = position
 	nextPosition = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
 	
-	positionDifference = nextPosition - fromPosition
-	
 	movement = 0.0
+	pass
+
+func set_flag(direction: int):
+	var nextCoords = tileMap.get_neighbor(tileMap.local_to_map(position), direction, false)
+	tileMap.set_flag(nextCoords)
+	print("Setting flag")
 	pass

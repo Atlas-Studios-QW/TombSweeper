@@ -9,6 +9,7 @@ extends Node
 @export var neighborDirectionIds = [14, 0, 2, 6, 8, 10]
 
 @export var itemCoords = {}
+@export var flagCoords = []
 @export var bombCoords = []
 @export var exploredCoords = []
 
@@ -39,5 +40,6 @@ var roomTiles = {
 
 var itemTiles = {
 	"Key": Vector2i(0,0),
-	"Coin": Vector2i(1,0)
+	"Coin": Vector2i(1,0),
+	"Flag": Vector2i(0,1)
 }

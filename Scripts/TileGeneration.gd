@@ -10,6 +10,7 @@ var roomTiles
 var itemTiles
 
 var itemCoords
+var flagCoords
 var bombCoords
 var exploredCoords
 
@@ -32,6 +33,7 @@ func _ready():
 	mapSize = gameData.get("mapSize")
 	
 	itemCoords = gameData.get("itemCoords")
+	flagCoords = gameData.get("flagCoords")
 	bombCoords = gameData.get("bombCoords")
 	exploredCoords = gameData.get("exploredCoords")
 	
@@ -84,6 +86,18 @@ func check_bounds(size: Vector2, coords: Vector2):
 	var outBounds = coords[0] > size[0] or coords[0] < 0 or coords[1] > size[1] or coords[1] < 0
 	return !outBounds
 
+func set_flag(coords: Vector2i):
+	if (exploredCoords.has(coords)):
+		return
+	
+	if (flagCoords.has(coords)):
+		itemsMap.set_cell(0, coords)
+		flagCoords.erase(coords)
+	else:
+		itemsMap.set_cell(0, coords, 1, itemTiles["Flag"])
+		flagCoords.append(coords)
+	pass
+
 func setup_cell_labels(coordsList: Array):
 	for coords in coordsList:
 		cellLabelsParent.add_child(cellLabelPrefab.instantiate())
@@ -96,6 +110,9 @@ func setup_cell_labels(coordsList: Array):
 func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
 	if (itemCoords.has(coords)):
 		itemsMap.set_cell(0, coords, 1, itemTiles[itemCoords[coords]])
+	
+	if (flagCoords.has(coords)):
+		itemsMap.set_cell(0, coords)
 	
 	var newIndicator = calculate_indicator(coords, false)
 	if (newIndicator != "" or !updateRecursive):
