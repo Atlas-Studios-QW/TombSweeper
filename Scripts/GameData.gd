@@ -34,8 +34,9 @@ enum Difficulty {
 }
 
 var roomTiles = {
-	"Normal": Vector2i(0,0),
-	"Bomb": Vector2i(1,0)
+	"Explored": Vector2i(0,0),
+	"Unexplored": Vector2i(0,1),
+	"NonEnterable": Vector2i(1,0)
 }
 
 var itemTiles = {

@@ -65,24 +65,24 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 		if (!allowOverwrite and get_cell_tile_data(0, coords) != null):
 			continue
 		
-		var tile = "Normal"
+		var tile = "Unexplored"
 		
 		var chance = rng.randf_range(0.0,100.0)
-		if (!check_bounds(mapSize, coords)):
+		if (!check_bounds(coords)):
 			bombCoords.append(coords)
-			tile = "Bomb"
+			tile = "NonEnterable"
 		elif (chance <= difficulty * 0.1):
 			itemCoords[coords] = "Coin"
 		elif (chance <= difficulty):
 			bombCoords.append(coords)
-			tile = "Bomb"
+			#tile = "NonEnterable"
 			
 		set_cell(0, coords, 0, roomTiles[tile])
 	
 	print (itemCoords)
 	pass
 
-func check_bounds(size: Vector2, coords: Vector2):
+func check_bounds(coords: Vector2i, size: Vector2i = mapSize):
 	var outBounds = coords[0] > size[0] or coords[0] < 0 or coords[1] > size[1] or coords[1] < 0
 	return !outBounds
 
@@ -113,6 +113,8 @@ func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
 	
 	if (flagCoords.has(coords)):
 		itemsMap.set_cell(0, coords)
+		
+	set_cell(0, coords, 0, roomTiles["Explored"])
 	
 	var newIndicator = calculate_indicator(coords, false)
 	if (newIndicator != "" or !updateRecursive):
@@ -128,12 +130,9 @@ func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
 	
 	pass
 
-func get_neighbor(coords: Vector2i, direction: int = 0, global: bool = true):
+func get_neighbor(coords: Vector2i, direction: int = 0):
 	var nextCell = get_neighbor_cell(coords, neighborDirectionIds[direction])
-	if (!global):
-		return nextCell
-	var nextGlobalCell = map_to_local(nextCell)
-	return nextGlobalCell
+	return nextCell
 
 func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	if (!exploredCoords.has(coords) and checkExplored):

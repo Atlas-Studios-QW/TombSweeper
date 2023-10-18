@@ -33,8 +33,8 @@ func _process(delta):
 	else:
 		if (movement != 2.0):
 			movement = 2.0
-			moveButtonsParent.show()
 			tileMap.on_enter_cell(tileMap.local_to_map(position))
+			moveButtonsParent.show()
 	pass
 
 func _input(event):
@@ -56,16 +56,28 @@ func start_move(direction: int):
 	if (movement < 1):
 		return
 	
+	var nextCoords = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
+	
+	if (!check_valid_move(nextCoords)):
+		return
+	
 	moveButtonsParent.hide()
 	
 	fromPosition = position
-	nextPosition = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
-	
+	nextPosition = tileMap.map_to_local(nextCoords)
 	movement = 0.0
 	pass
 
 func set_flag(direction: int):
-	var nextCoords = tileMap.get_neighbor(tileMap.local_to_map(position), direction, false)
+	var nextCoords = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
 	tileMap.set_flag(nextCoords)
 	print("Setting flag")
+	pass
+
+func check_valid_move(coords: Vector2i):
+	if (!tileMap.check_bounds(coords)):
+		return false
+	if (tileMap.flagCoords.has(coords)):
+		return false
+	return true
 	pass
