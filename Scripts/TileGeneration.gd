@@ -69,7 +69,7 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 		
 		var chance = rng.randf_range(0.0,100.0)
 		if (!check_bounds(coords)):
-			bombCoords.append(coords)
+			exploredCoords.append(coords)
 			tile = "NonEnterable"
 		elif (chance <= difficulty * 0.1):
 			itemCoords[coords] = "Coin"

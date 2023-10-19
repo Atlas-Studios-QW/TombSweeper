@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+var overlayHandler
+
 var playerSpeed
 var tileMap
 
@@ -12,6 +14,8 @@ var positionDifference = Vector2(0,0)
 var movement = 1.0;
 
 func _ready():
+	overlayHandler = get_node("/root/Overlay")
+	
 	playerSpeed = get_node("/root/GameData").get("playerSpeed")
 	tileMap = get_node("/root/Level/World/RoomsMap")
 	moveButtonsParent = get_node("MoveControl")
@@ -35,6 +39,7 @@ func _process(delta):
 			movement = 2.0
 			tileMap.on_enter_cell(tileMap.local_to_map(position))
 			moveButtonsParent.show()
+			overlayHandler._update_from_gamedata()
 	pass
 
 func _input(event):
