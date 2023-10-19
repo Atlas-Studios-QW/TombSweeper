@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dw0tq7h7ysnw7"
-path="res://.godot/imported/MoveButton.png-ccfeba1e45e8966922e9b05cd80b5476.ctex"
+uid="uid://dbqaaaaxym02g"
+path="res://.godot/imported/BaseHexagonBorder.png-a3e017d9f946d52cadadf007473e4f6c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/MoveButton.png"
-dest_files=["res://.godot/imported/MoveButton.png-ccfeba1e45e8966922e9b05cd80b5476.ctex"]
+source_file="res://Sprites/BaseHexagonBorder.png"
+dest_files=["res://.godot/imported/BaseHexagonBorder.png-a3e017d9f946d52cadadf007473e4f6c.ctex"]
 
 [params]
 

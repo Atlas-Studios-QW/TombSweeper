@@ -24,7 +24,7 @@ extends Node
 }
 
 @export var tools = {
-	"Radar" = Tool.new(10, 5, null)
+	"Radar" = Tool.new("Zooms out your view for 5 seconds\nAvailable after exploring 5 new cells", 5, 5, null)
 }
 
 func _ready():
@@ -57,13 +57,15 @@ var itemTiles = {
 }
 
 class Tool:
+	var description: String
 	var collected: bool
 	var availability: int
 	var requiredAvailability: int
 	var effectDuration: int
 	var button: Control
 	
-	func _init(availabilityToUse: int, effectTime: int, UIButton: Control):
+	func _init(describe: String, availabilityToUse: int, effectTime: int, UIButton: Control):
+		description = describe
 		collected = false
 		availability = 0
 		requiredAvailability = availabilityToUse

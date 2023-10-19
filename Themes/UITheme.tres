@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=8 format=3 uid="uid://jsij8ngisnd3"]
 
-[ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/MoveButton.png" id="1_nj7t4"]
+[ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/BaseHexagon.png" id="1_nj7t4"]
 [ext_resource type="StyleBox" uid="uid://7eag5jcxgcg8" path="res://Themes/BaseStyle.tres" id="1_o3n3n"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tx3tg"]

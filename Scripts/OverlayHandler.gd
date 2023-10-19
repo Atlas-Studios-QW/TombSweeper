@@ -7,7 +7,7 @@ extends CanvasLayer
 @onready var toolButtonPrefab = preload("res://Prefabs/UI/ToolButton.tscn")
 
 @export var coinsCounter: Label
-@export var toolsParent: AspectRatioContainer
+@export var toolsParent: Node
 
 func _update_from_gamedata():
 	_update_coin_counter(gameData.collectedItems["Coin"])
@@ -23,6 +23,7 @@ func _update_after_move(unexploredCell: bool):
 		for toolName in gameData.tools:
 			gameData.tools[toolName].availability += 1
 	
+	_update_from_gamedata()
 	pass
 
 func _update_coin_counter(newAmount: int):

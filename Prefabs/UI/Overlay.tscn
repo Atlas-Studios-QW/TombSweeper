@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://kqkwigb5o46w"]
 
 [ext_resource type="Script" path="res://Scripts/OverlayHandler.gd" id="1_guv7x"]
+[ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/BaseHexagon.png" id="2_2ne5t"]
 [ext_resource type="Texture2D" uid="uid://ewdb47l7k0nu" path="res://Sprites/Collect.png" id="2_jjqs6"]
-[ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/MoveButton.png" id="2_yivod"]
 
 [sub_resource type="Animation" id="Animation_rphwa"]
 resource_name = "Collected"
@@ -11,7 +11,7 @@ step = 0.05
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("CoinCollected:modulate")
+tracks/0/path = NodePath("Coins/CoinCollected:modulate")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -23,14 +23,14 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("CoinCollected:offset")
-tracks/1/interp = 1
+tracks/1/path = NodePath("Coins/CoinCollected:position")
+tracks/1/interp = 2
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.5),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(0, 30), Vector2(0, -30)]
+"values": [Vector2(68, 116), Vector2(68, 20)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_yn7n8"]
@@ -39,15 +39,16 @@ _data = {
 }
 
 [sub_resource type="LabelSettings" id="LabelSettings_rytmk"]
-font_size = 12
+line_spacing = 0.0
+font_size = 20
 
 [sub_resource type="LabelSettings" id="LabelSettings_hj6mp"]
 line_spacing = 0.0
-font_size = 40
+font_size = 75
 
 [node name="Overlay" type="CanvasLayer" node_paths=PackedStringArray("coinsCounter", "toolsParent")]
 script = ExtResource("1_guv7x")
-coinsCounter = NodePath("Top Left/CoinCounter")
+coinsCounter = NodePath("Top Left/Coins/CoinCounter")
 toolsParent = NodePath("Bottom Left")
 
 [node name="OverlayAnimator" type="AnimationPlayer" parent="."]
@@ -57,47 +58,79 @@ libraries = {
 }
 
 [node name="Top Left" type="AspectRatioContainer" parent="."]
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 110.0
-offset_bottom = 110.0
-stretch_mode = 0
+anchors_preset = -1
+anchor_right = 0.1
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 20.0
+offset_bottom = 20.0
+alignment_vertical = 0
 
-[node name="Background" type="TextureRect" parent="Top Left"]
+[node name="Coins" type="Control" parent="Top Left"]
 layout_mode = 2
-texture = ExtResource("2_yivod")
 
-[node name="Label" type="Label" parent="Top Left"]
+[node name="Background" type="TextureRect" parent="Top Left/Coins"]
+modulate = Color(0, 0, 0.117647, 0.941176)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_2ne5t")
+
+[node name="Label" type="Label" parent="Top Left/Coins"]
 custom_minimum_size = Vector2(100, 80)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Coins"
 label_settings = SubResource("LabelSettings_rytmk")
 horizontal_alignment = 1
 
-[node name="CoinCounter" type="Label" parent="Top Left"]
+[node name="CoinCounter" type="Label" parent="Top Left/Coins"]
 custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "0"
 label_settings = SubResource("LabelSettings_hj6mp")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CoinCollected" type="Sprite2D" parent="Top Left"]
+[node name="CoinCollected" type="TextureRect" parent="Top Left/Coins"]
 modulate = Color(1, 1, 1, 0)
-position = Vector2(49, 51)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_jjqs6")
-offset = Vector2(0, -30)
-
-[node name="Bottom Left" type="AspectRatioContainer" parent="."]
-anchors_preset = -1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
 anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -80.0
+offset_right = 32.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_jjqs6")
+
+[node name="Bottom Left" type="FlowContainer" parent="."]
+anchors_preset = -1
+anchor_top = 0.25
 anchor_right = 0.1
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = -10.0
-grow_horizontal = 0
+offset_left = 20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = -20.0
 grow_vertical = 0
-alignment_vertical = 2
+alignment = 2
+vertical = true
