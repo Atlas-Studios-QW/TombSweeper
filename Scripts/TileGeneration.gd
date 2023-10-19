@@ -2,6 +2,8 @@ extends TileMap
 
 @export var itemsMap: TileMap
 
+@export var borderSize: int = 4
+
 var neighborDirectionIds
 var difficulty
 var mapSize
@@ -45,18 +47,18 @@ func _ready():
 	
 	rng = RandomNumberGenerator.new()
 	
-	var mapCoords = calculate_coords(4)
+	var mapCoords = calculate_coords(borderSize)
 	
 	generate_cells(mapCoords, false)
 	setup_cell_labels(mapCoords)
 	pass
 
-func calculate_coords(borderSize: int = 0):
+func calculate_coords(borderWidth: int = 0):
 	var calculatedCoords = []
 	
-	for x in mapSize[0] + borderSize * 2:
-		for y in mapSize[1] + borderSize * 2:
-			calculatedCoords.append(Vector2i(x - borderSize,y - borderSize))
+	for x in mapSize[0] + borderWidth * 2:
+		for y in mapSize[1] + borderWidth * 2:
+			calculatedCoords.append(Vector2i(x - borderWidth,y - borderWidth))
 			
 	return calculatedCoords
 

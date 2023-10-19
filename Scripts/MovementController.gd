@@ -85,4 +85,3 @@ func check_valid_move(coords: Vector2i):
 	if (tileMap.flagCoords.has(coords)):
 		return false
 	return true
-	pass
