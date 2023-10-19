@@ -4,61 +4,40 @@ extends TileMap
 
 @export var borderSize: int = 4
 
-var neighborDirectionIds
-var difficulty
-var mapSize
+@onready var gameData = get_node("/root/GameData");
 
-var roomTiles
-var itemTiles
+@onready var neighborDirectionIds = gameData.get("neighborDirectionIds")
+@onready var difficulty = gameData.get("difficulty")
+@onready var mapSize = gameData.get("mapSize")
 
-var itemCoords
-var flagCoords
-var bombCoords
-var exploredCoords
+@onready var roomTiles = gameData.get("roomTiles")
+@onready var itemTiles = gameData.get("itemTiles")
 
-var cellLabels
-var cellLabelsParent
-var cellLabelPrefab
+@onready var itemCoords = gameData.get("itemCoords")
+@onready var flagCoords = gameData.get("flagCoords")
+@onready var bombCoords = gameData.get("bombCoords")
+@onready var exploredCoords = gameData.get("exploredCoords")
 
-var collectedItems
+@onready var cellLabelPrefab = preload("res://Prefabs/UI/CellLabel.tscn")
+@onready var cellLabels = gameData.get("cellLabels")
+@onready var cellLabelsParent = gameData.get("cellLabelsParent")
 
-var rng
+@onready var collectedItems = gameData.get("collectedItems")
+
+@onready var rng = RandomNumberGenerator.new()
 
 func _ready():
-	var gameData = get_node("/root/GameData");
-	
-	neighborDirectionIds = gameData.get("neighborDirectionIds")
-	roomTiles = gameData.get("roomTiles")
-	itemTiles = gameData.get("itemTiles")
-	
-	difficulty = gameData.get("difficulty")
-	mapSize = gameData.get("mapSize")
-	
-	itemCoords = gameData.get("itemCoords")
-	flagCoords = gameData.get("flagCoords")
-	bombCoords = gameData.get("bombCoords")
-	exploredCoords = gameData.get("exploredCoords")
-	
-	collectedItems = gameData.get("collectedItems")
-	
-	cellLabelPrefab = preload("res://Prefabs/UI/CellLabel.tscn")
-	cellLabels = gameData.get("cellLabels")
-	cellLabelsParent = gameData.get("cellLabelsParent")
-	
-	rng = RandomNumberGenerator.new()
-	
-	var mapCoords = calculate_coords(borderSize)
-	
+	var mapCoords = calculate_coords(mapSize, borderSize)
 	generate_cells(mapCoords, false)
 	setup_cell_labels(mapCoords)
 	pass
 
-func calculate_coords(borderWidth: int = 0):
+func calculate_coords(size, border: int = 0):
 	var calculatedCoords = []
 	
-	for x in mapSize[0] + borderWidth * 2:
-		for y in mapSize[1] + borderWidth * 2:
-			calculatedCoords.append(Vector2i(x - borderWidth,y - borderWidth))
+	for x in size[0] + border * 2:
+		for y in size[1] + border * 2:
+			calculatedCoords.append(Vector2i(x - border,y - border))
 			
 	return calculatedCoords
 
@@ -161,7 +140,6 @@ func on_enter_cell(coords: Vector2i):
 		print("GAME OVER")
 		print("Total coins: " + str(collectedItems["Coin"]))
 	else:
-		print("Safe cell")
 		exploredCoords.append(coords)
 		update_cell_label(coords, true)
 	pass
