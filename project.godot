@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 SceneManager="*res://Scripts/SceneManager.gd"
 GameData="*res://Scripts/GameData.gd"
+Overlay="*res://Prefabs/UI/Overlay.tscn"
 
 [display]
 

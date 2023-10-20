@@ -2,41 +2,40 @@ extends Node
 
 @onready var overlayHandler = get_node("/root/Overlay")
 
-@export var canMove = true
+@onready var saveData = SaveData.new()
 
-@export var mapSize = Vector2i(10,10)
-@export var difficulty = Difficulty.Normal
+var playerSpeed = 4.0
 
-@export var spawnPoint = Vector2i(5,5)
-@export var playerSpeed = 4.0
+var neighborDirectionIds = [14, 0, 2, 6, 8, 10]
+var canMove = true
 
-@export var neighborDirectionIds = [14, 0, 2, 6, 8, 10]
-
-@export var itemCoords = {}
-@export var flagCoords = []
-@export var bombCoords = []
-@export var exploredCoords = []
-
-@export var cellLabels = {}
-@export var cellLabelsParent: Control
-
-@export var collectedItems = {
-	"Key": 0,
-	"Coin": 0
-}
-
-@export var tools = {
-	"Radar" = Tool.new("Zooms out your view for 5 seconds", 5, 5, null),
-	"Detonator" = Tool.new("When activated, you can select one cell around you to explode a bomb", 10, 0, null)
-}
-
-func _ready():
-	cellLabelsParent = get_node("/root/Level/Player/CellLabels")
-	print(cellLabelsParent)
-	pass
+class SaveData:
+	var mapSize = Vector2i(10,10)
+	var difficulty = Difficulty.Normal
 	
+	var itemCoords = {}
+	var flagCoords = []
+	var bombCoords = []
+	var exploredCoords = []
+	
+	var cellLabels = {}
+	
+	var collectedItems = {
+		"Key": 0,
+		"Coin": 0
+	}
+	
+	var tools = {
+		"Radar" = Tool.new("Zooms out your view for 5 seconds", 5, 5, null),
+		"Detonator" = Tool.new("When activated, you can select one cell around you to explode a bomb", 10, 0, null)
+	}
+	
+	func _init():
+		pass
+	pass
+
 func _get_tool(toolName: String):
-	tools[toolName].collected = true
+	saveData.tools[toolName].collected = true
 	overlayHandler._setup_tool(toolName, load("res://Sprites/Items/" + toolName + ".png"))
 	pass
 
@@ -75,3 +74,4 @@ class Tool:
 		effectDuration = effectTime
 		button = UIButton
 		pass
+	pass

@@ -4,6 +4,7 @@
 font_size = 60
 
 [node name="CellLabel" type="Label"]
+z_index = 2
 custom_minimum_size = Vector2(256, 256)
 anchors_preset = 8
 anchor_left = 0.5

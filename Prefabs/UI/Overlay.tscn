@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://kqkwigb5o46w"]
+[gd_scene load_steps=11 format=3 uid="uid://kqkwigb5o46w"]
 
 [ext_resource type="Script" path="res://Scripts/OverlayHandler.gd" id="1_guv7x"]
 [ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/BaseHexagon.png" id="2_2ne5t"]
@@ -48,10 +48,14 @@ font_size = 75
 line_spacing = 0.0
 font_size = 80
 
+[sub_resource type="LabelSettings" id="LabelSettings_n6b04"]
+font_size = 40
+
 [sub_resource type="LabelSettings" id="LabelSettings_n8js4"]
 font_size = 25
 
 [node name="Overlay" type="CanvasLayer" node_paths=PackedStringArray("pauseMenu", "endScreen", "coinsCounter", "toolsParent", "detonatorUI")]
+visible = false
 script = ExtResource("1_guv7x")
 pauseMenu = NodePath("PauseMenu")
 endScreen = NodePath("EndScreen")
@@ -162,11 +166,36 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "You won!
+text = "You <result>!
 
 Total Coins:
-10"
+<coins>"
 label_settings = SubResource("LabelSettings_k30m1")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ReturnButton" type="Button" parent="EndScreen"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.8
+anchor_right = 0.6
+anchor_bottom = 0.9
+offset_left = -4.0
+offset_top = -8.0
+offset_right = 4.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="EndScreen/ReturnButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Return to menu"
+label_settings = SubResource("LabelSettings_n6b04")
 horizontal_alignment = 1
 vertical_alignment = 1
 

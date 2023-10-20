@@ -2,9 +2,10 @@ extends CharacterBody2D
 
 @onready var overlayHandler = get_node("/root/Overlay")
 @onready var gameData = get_node("/root/GameData")
+@onready var saveData: GameData.SaveData = gameData.saveData
 
 @onready var animator: AnimationPlayer = get_node("../PlayerAnimator")
-@onready var playerSpeed = gameData.get("playerSpeed")
+@onready var playerSpeed = gameData.playerSpeed
 @onready var tileMap: TileMap = get_node("/root/Level/World/RoomsMap")
 @onready var moveButtonsParent = get_node("MoveControl")
 @onready var camera: Camera2D = get_node("Camera")
@@ -18,15 +19,15 @@ var usingDetonator = false
 @onready var timer = Timer.new()
 
 func _ready():
-	gameData.cellLabelsParent = get_node("../CellLabels")
-	
-	var spawnPoint = gameData.get("spawnPoint")
+	var spawnPoint = tileMap.spawnPoint
 	position = tileMap.map_to_local(spawnPoint)
 	
 	fromPosition = position
 	nextPosition = position
 	
 	tileMap.on_enter_cell(tileMap.local_to_map(position))
+	
+	gameData.canMove = true
 	
 	gameData._get_tool("Radar")
 	gameData._get_tool("Detonator")
@@ -40,7 +41,7 @@ func _process(delta):
 	else:
 		if (movement != 2.0):
 			movement = 2.0
-			var newCell = !tileMap.exploredCoords.has(tileMap.local_to_map(position))
+			var newCell = !saveData.exploredCoords.has(tileMap.local_to_map(position))
 			var moveResult = tileMap.on_enter_cell(tileMap.local_to_map(position))
 			if (moveResult != null):
 				overlayHandler.show_game_result(moveResult)
@@ -99,12 +100,12 @@ func check_valid_move(coords: Vector2i):
 		return false
 	if (!tileMap.check_bounds(coords)):
 		return false
-	if (tileMap.flagCoords.has(coords)):
+	if (saveData.flagCoords.has(coords)):
 		return false
 	return true
 
 func use_tool(toolName: String):
-	var toolData: GameData.Tool = gameData.tools[toolName]
+	var toolData: GameData.Tool = saveData.tools[toolName]
 	if (toolData.availability < toolData.requiredAvailability):
 		return
 	

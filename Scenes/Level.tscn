@@ -16,6 +16,10 @@ script = ExtResource("2_xq52i")
 itemsMap = NodePath("../ItemsMap")
 borderSize = 2
 
+[node name="CellLabels" type="Control" parent="World/RoomsMap"]
+layout_mode = 3
+anchors_preset = 0
+
 [node name="ItemsMap" type="TileMap" parent="World"]
 tile_set = ExtResource("1_g422t")
 format = 2
