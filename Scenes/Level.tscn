@@ -14,7 +14,7 @@ format = 2
 layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
 script = ExtResource("2_xq52i")
 itemsMap = NodePath("../ItemsMap")
-borderSize = 10
+borderSize = 2
 
 [node name="ItemsMap" type="TileMap" parent="World"]
 tile_set = ExtResource("1_g422t")

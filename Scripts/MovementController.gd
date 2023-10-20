@@ -37,14 +37,19 @@ func _process(delta):
 		if (movement != 2.0):
 			movement = 2.0
 			var newCell = !tileMap.exploredCoords.has(tileMap.local_to_map(position))
-			var playerWon = tileMap.on_enter_cell(tileMap.local_to_map(position))
+			var moveResult = tileMap.on_enter_cell(tileMap.local_to_map(position))
+			if (moveResult != null):
+				overlayHandler.show_game_result(moveResult)
+				return
 			moveButtonsParent.show()
 			overlayHandler._update_after_move(newCell)
 	pass
 
 func _input(event):
 	var mouseDistance = get_global_mouse_position().distance_to(position)
-	if (mouseDistance > 100):
+	var maxDistance: int = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.3
+	
+	if (mouseDistance > maxDistance):
 		return
 	
 	var mouseDirection = get_global_mouse_position().angle_to_point(position)
@@ -83,6 +88,8 @@ func set_flag(direction: int):
 	pass
 
 func check_valid_move(coords: Vector2i):
+	if (!gameData.canMove):
+		return false
 	if (!tileMap.check_bounds(coords)):
 		return false
 	if (tileMap.flagCoords.has(coords)):

@@ -1,17 +1,22 @@
-[gd_scene format=3 uid="uid://fvjd1b0k7p4k"]
+[gd_scene load_steps=2 format=3 uid="uid://fvjd1b0k7p4k"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_t7lab"]
+font_size = 60
 
 [node name="CellLabel" type="Label"]
+custom_minimum_size = Vector2(256, 256)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -576.0
-offset_top = -324.0
-offset_right = -544.0
-offset_bottom = -292.0
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+label_settings = SubResource("LabelSettings_t7lab")
 horizontal_alignment = 1
 vertical_alignment = 1

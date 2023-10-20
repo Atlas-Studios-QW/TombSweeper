@@ -38,8 +38,8 @@ func _ready():
 func calculate_coords(size, border: int = 0):
 	var calculatedCoords = []
 	
-	for x in size[0] + border * 2:
-		for y in size[1] + border * 2:
+	for x in size[0] + border * 2 + 1:
+		for y in size[1] + border * 2 + 1:
 			calculatedCoords.append(Vector2i(x - border,y - border))
 			
 	return calculatedCoords
@@ -88,7 +88,7 @@ func setup_cell_labels(coordsList: Array):
 		cellLabelsParent.add_child(cellLabelPrefab.instantiate())
 		var newCellLabel = cellLabelsParent.get_child(cellLabelsParent.get_child_count() - 1)
 		var globalLocation = map_to_local(coords)
-		newCellLabel.position = globalLocation - Vector2(16,16)
+		newCellLabel.position = globalLocation - Vector2(128,128)
 		cellLabels[coords] = newCellLabel
 	pass
 
@@ -134,6 +134,9 @@ func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	return indicatorText
 
 func on_enter_cell(coords: Vector2i):
+	
+	print(str(exploredCoords.size()) + " >= " + str(cellsToWin))
+	
 	if (itemCoords.has(coords)):
 		print("Found item: " + itemCoords[coords])
 		collectedItems[itemCoords[coords]] += 1
@@ -143,7 +146,7 @@ func on_enter_cell(coords: Vector2i):
 		return false
 	elif (exploredCoords.size() >= cellsToWin):
 		return true
-	else:
+	elif (!exploredCoords.has(coords)):
 		exploredCoords.append(coords)
 		update_cell_label(coords, true)
 	return null

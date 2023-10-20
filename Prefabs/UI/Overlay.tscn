@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://kqkwigb5o46w"]
+[gd_scene load_steps=9 format=3 uid="uid://kqkwigb5o46w"]
 
 [ext_resource type="Script" path="res://Scripts/OverlayHandler.gd" id="1_guv7x"]
 [ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/BaseHexagon.png" id="2_2ne5t"]
@@ -14,22 +14,21 @@ tracks/0/path = NodePath("Coins/CoinCollected:modulate")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.5, 1),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Coins/CoinCollected:position")
-tracks/1/interp = 2
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.25, 0.75, 1),
+"times": PackedFloat32Array(0, 0.2, 0.8, 1),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [Vector2(68, 116), Vector2(68, 84), Vector2(68, 52), Vector2(68, 20)]
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Coins/CoinCollected:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0),
+"points": PackedFloat32Array(128, -0.25, 0, 0.15, -4.71499, 80.3098, -0.1, 8.26446, 0.2, -10.7438, 48.9049, -0.25, 15.7025, 0.15, -9.91735, 0, -0.15, 1.79745, 0.25, 0),
+"times": PackedFloat32Array(0, 0.25, 0.75, 1)
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_yn7n8"]
@@ -45,31 +44,31 @@ font_size = 20
 line_spacing = 0.0
 font_size = 75
 
-[node name="Overlay" type="CanvasLayer" node_paths=PackedStringArray("coinsCounter", "toolsParent")]
+[sub_resource type="LabelSettings" id="LabelSettings_k30m1"]
+line_spacing = 0.0
+font_size = 80
+
+[node name="Overlay" type="CanvasLayer" node_paths=PackedStringArray("pauseMenu", "endScreen", "coinsCounter", "toolsParent")]
 script = ExtResource("1_guv7x")
-coinsCounter = NodePath("Top Left/Coins/CoinCounter")
+pauseMenu = NodePath("PauseMenu")
+endScreen = NodePath("EndScreen")
+coinsCounter = NodePath("Coins/CoinCounter")
 toolsParent = NodePath("Bottom Left")
 
 [node name="OverlayAnimator" type="AnimationPlayer" parent="."]
-root_node = NodePath("../Top Left")
 libraries = {
 "": SubResource("AnimationLibrary_yn7n8")
 }
 
-[node name="Top Left" type="AspectRatioContainer" parent="."]
-anchors_preset = -1
-anchor_right = 0.1
-anchor_bottom = 0.5
+[node name="Coins" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-alignment_vertical = 0
+offset_right = 220.0
+offset_bottom = 220.0
 
-[node name="Coins" type="Control" parent="Top Left"]
-layout_mode = 2
-
-[node name="Background" type="TextureRect" parent="Top Left/Coins"]
+[node name="Background" type="TextureRect" parent="Coins"]
 modulate = Color(0, 0, 0.117647, 0.941176)
 layout_mode = 1
 anchors_preset = 15
@@ -78,8 +77,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_2ne5t")
+expand_mode = 1
 
-[node name="Label" type="Label" parent="Top Left/Coins"]
+[node name="Label" type="Label" parent="Coins"]
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 1
 anchors_preset = -1
@@ -92,7 +92,7 @@ text = "Coins"
 label_settings = SubResource("LabelSettings_rytmk")
 horizontal_alignment = 1
 
-[node name="CoinCounter" type="Label" parent="Top Left/Coins"]
+[node name="CoinCounter" type="Label" parent="Coins"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 1
 anchors_preset = 15
@@ -105,26 +105,25 @@ label_settings = SubResource("LabelSettings_hj6mp")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CoinCollected" type="TextureRect" parent="Top Left/Coins"]
+[node name="CoinCollected" type="TextureRect" parent="Coins"]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -28.0
-offset_top = -76.0
-offset_right = 36.0
-offset_bottom = -12.0
+anchors_preset = -1
+anchor_left = 0.25
+anchor_top = 0.25
+anchor_right = 0.75
+anchor_bottom = 0.75
+offset_top = -50.0
+offset_bottom = -50.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_jjqs6")
+expand_mode = 1
 
 [node name="Bottom Left" type="FlowContainer" parent="."]
 anchors_preset = -1
 anchor_top = 0.25
-anchor_right = 0.1
+anchor_right = 0.15
 anchor_bottom = 1.0
 offset_left = 20.0
 offset_top = -20.0
@@ -133,3 +132,54 @@ offset_bottom = -20.0
 grow_vertical = 0
 alignment = 2
 vertical = true
+
+[node name="EndScreen" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="EndScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.392157)
+
+[node name="GameResultText" type="Label" parent="EndScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "You won!
+
+Total Coins:
+10"
+label_settings = SubResource("LabelSettings_k30m1")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.392157)

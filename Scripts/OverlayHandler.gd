@@ -6,11 +6,16 @@ extends CanvasLayer
 
 @onready var toolButtonPrefab = preload("res://Prefabs/UI/ToolButton.tscn")
 
+@export var pauseMenu: Node
+@export var endScreen: Node
 @export var coinsCounter: Label
 @export var toolsParent: Node
 
 func _update_from_gamedata():
 	_update_coin_counter(gameData.collectedItems["Coin"])
+	
+	pauseMenu.visible = false
+	endScreen.visible = false
 	
 	for toolName in gameData.tools:
 		var tool: GameData.Tool = gameData.tools[toolName]
@@ -41,10 +46,35 @@ func _setup_tool(toolName: String, toolIcon: Texture):
 	var newToolButton = toolsParent.get_child(toolsParent.get_child_count() - 1)
 	newToolButton.get_node("ToolName").text = toolName
 	newToolButton.get_node("ToolIcon").texture = toolIcon
+	var availabilityFIll: TextureProgressBar = newToolButton.get_node("Availability")
+	availabilityFIll.max_value = gameData.tools[toolName].requiredAvailability
 	newToolButton.get_node("Button").connect("button_up", Callable(get_node("/root/Level/Player/Body"), "use_tool").bind(toolName))
+	newToolButton.get_node("Button").connect("mouse_entered", Callable(self, "tooltipShow").bind(toolName))
+	newToolButton.get_node("Button").connect("mouse_exited", Callable(self, "tooltipHide").bind(toolName))
+	newToolButton.get_node("Tooltip/TooltipText").text = gameData.tools[toolName].description
 	gameData.tools[toolName].button = newToolButton
 	pass
 
 func _update_tool_button(toolName: String, newProgress: float):
 	gameData.tools[toolName].button.get_node("Availability").value = newProgress
+	pass
+
+func show_game_result(gameWon: bool):
+	gameData.canMove = false
+	endScreen.visible = true
+	var resultLabel = endScreen.get_node("GameResultText")
+	if (gameWon):
+		resultLabel.text = "You Won!"
+	else:
+		resultLabel.text = "You Lost"
+	
+	resultLabel.text += "\n\nTotal Coins:\n" + str(gameData.collectedItems["Coin"])
+	pass
+
+func tooltipShow(toolName: String):
+	gameData.tools[toolName].button.get_node("Tooltip").visible = true
+	pass
+
+func tooltipHide(toolName: String):
+	gameData.tools[toolName].button.get_node("Tooltip").visible = false
 	pass
