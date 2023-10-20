@@ -112,7 +112,6 @@ func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
 		if (!exploredCoords.has(neighbor)):
 			exploredCoords.append(neighbor)
 			update_cell_label(neighbor, true)
-	
 	pass
 
 func get_neighbor(coords: Vector2i, direction: int = 0):
@@ -134,9 +133,6 @@ func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	return indicatorText
 
 func on_enter_cell(coords: Vector2i):
-	
-	print(str(exploredCoords.size()) + " >= " + str(cellsToWin))
-	
 	if (itemCoords.has(coords)):
 		print("Found item: " + itemCoords[coords])
 		collectedItems[itemCoords[coords]] += 1
@@ -149,4 +145,6 @@ func on_enter_cell(coords: Vector2i):
 	elif (!exploredCoords.has(coords)):
 		exploredCoords.append(coords)
 		update_cell_label(coords, true)
+		if (exploredCoords.size() >= cellsToWin):
+			return true
 	return null

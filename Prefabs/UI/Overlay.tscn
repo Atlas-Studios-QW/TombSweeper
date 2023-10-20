@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://kqkwigb5o46w"]
+[gd_scene load_steps=10 format=3 uid="uid://kqkwigb5o46w"]
 
 [ext_resource type="Script" path="res://Scripts/OverlayHandler.gd" id="1_guv7x"]
 [ext_resource type="Texture2D" uid="uid://dw0tq7h7ysnw7" path="res://Sprites/BaseHexagon.png" id="2_2ne5t"]
@@ -48,12 +48,16 @@ font_size = 75
 line_spacing = 0.0
 font_size = 80
 
-[node name="Overlay" type="CanvasLayer" node_paths=PackedStringArray("pauseMenu", "endScreen", "coinsCounter", "toolsParent")]
+[sub_resource type="LabelSettings" id="LabelSettings_n8js4"]
+font_size = 25
+
+[node name="Overlay" type="CanvasLayer" node_paths=PackedStringArray("pauseMenu", "endScreen", "coinsCounter", "toolsParent", "detonatorUI")]
 script = ExtResource("1_guv7x")
 pauseMenu = NodePath("PauseMenu")
 endScreen = NodePath("EndScreen")
 coinsCounter = NodePath("Coins/CoinCounter")
-toolsParent = NodePath("Bottom Left")
+toolsParent = NodePath("Tools")
+detonatorUI = NodePath("DetonatorUI")
 
 [node name="OverlayAnimator" type="AnimationPlayer" parent="."]
 libraries = {
@@ -120,7 +124,7 @@ grow_vertical = 2
 texture = ExtResource("2_jjqs6")
 expand_mode = 1
 
-[node name="Bottom Left" type="FlowContainer" parent="."]
+[node name="Tools" type="FlowContainer" parent="."]
 anchors_preset = -1
 anchor_top = 0.25
 anchor_right = 0.15
@@ -183,3 +187,27 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.392157)
+
+[node name="DetonatorUI" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchor_left = 0.4
+anchor_top = 0.2
+anchor_right = 0.6
+anchor_bottom = 0.4
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="Label" type="Label" parent="DetonatorUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Choose cell to detonate a bomb"
+label_settings = SubResource("LabelSettings_n8js4")
+horizontal_alignment = 1
+vertical_alignment = 1

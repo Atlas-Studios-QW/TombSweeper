@@ -13,11 +13,14 @@ var fromPosition = Vector2(0,0)
 var nextPosition = Vector2(0,0)
 var positionDifference = Vector2(0,0)
 var movement = 1.0;
+var usingDetonator = false
 
 @onready var timer = Timer.new()
 
 func _ready():
-	var spawnPoint = get_node("/root/GameData").get("spawnPoint")
+	gameData.cellLabelsParent = get_node("../CellLabels")
+	
+	var spawnPoint = gameData.get("spawnPoint")
 	position = tileMap.map_to_local(spawnPoint)
 	
 	fromPosition = position
@@ -26,6 +29,7 @@ func _ready():
 	tileMap.on_enter_cell(tileMap.local_to_map(position))
 	
 	gameData._get_tool("Radar")
+	gameData._get_tool("Detonator")
 	pass
 
 func _process(delta):
@@ -61,7 +65,10 @@ func _input(event):
 	if (event is InputEventMouseButton and event.pressed):
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
-				start_move(direction)
+				if (usingDetonator):
+					finish_detonator(direction)
+				else:
+					start_move(direction)
 			MOUSE_BUTTON_RIGHT:
 				set_flag(direction)
 	pass
@@ -98,11 +105,34 @@ func check_valid_move(coords: Vector2i):
 
 func use_tool(toolName: String):
 	var toolData: GameData.Tool = gameData.tools[toolName]
+	if (toolData.availability < toolData.requiredAvailability):
+		return
+	
 	match toolName:
 		"Radar":
-			if (toolData.availability >= toolData.requiredAvailability):
-				toolData.availability = 0
-				animator.play("RadarZoom")
+			animator.play("RadarZoom")
+		"Detonator":
+			usingDetonator = true
+			overlayHandler.detonator_visibility(true)
+			pass
 	
+	toolData.availability = 0
 	overlayHandler._update_from_gamedata()
+	pass
+
+func finish_detonator(direction: int):
+	var neighbor = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
+	tileMap.update_cell_label(neighbor, false)
+	if (gameData.bombCoords.has(neighbor)):
+		gameData.bombCoords.erase(neighbor)
+		tileMap.cellsToWin += 1
+		var localCells = tileMap.get_surrounding_cells(neighbor)
+		if (tileMap.flagCoords.has(neighbor)):
+			tileMap.flagCoords.erase(neighbor)
+		for cellCoords in localCells:
+			if (tileMap.exploredCoords.has(cellCoords) && tileMap.check_bounds(cellCoords)):
+				tileMap.update_cell_label(cellCoords, false)
+	
+	overlayHandler.detonator_visibility(false)
+	usingDetonator = false
 	pass

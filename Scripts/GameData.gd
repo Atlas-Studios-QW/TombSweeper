@@ -5,7 +5,7 @@ extends Node
 @export var canMove = true
 
 @export var mapSize = Vector2i(10,10)
-@export var difficulty = Difficulty.Easy
+@export var difficulty = Difficulty.Normal
 
 @export var spawnPoint = Vector2i(5,5)
 @export var playerSpeed = 4.0
@@ -26,8 +26,8 @@ extends Node
 }
 
 @export var tools = {
-	"Radar" = Tool.new("Zooms out your view for 5 seconds\nAvailable after exploring 5 new cells", 5, 5, null),
-	"Detonator" = Tool.new("When activated, you can select one cell around you to explode a bomb. If there is no bomb in that cell, nothing will happen.\nAvailable after explored 10 new cells", 10, 0, null)
+	"Radar" = Tool.new("Zooms out your view for 5 seconds", 5, 5, null),
+	"Detonator" = Tool.new("When activated, you can select one cell around you to explode a bomb", 10, 0, null)
 }
 
 func _ready():

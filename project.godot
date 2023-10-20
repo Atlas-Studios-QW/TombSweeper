@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="TombSweeper"
-run/main_scene="res://Scenes/Level.tscn"
+run/main_scene="res://Scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
+SceneManager="*res://Scripts/SceneManager.gd"
 GameData="*res://Scripts/GameData.gd"
-Overlay="*res://Prefabs/UI/Overlay.tscn"
 
 [display]
 

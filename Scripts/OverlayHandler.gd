@@ -6,10 +6,12 @@ extends CanvasLayer
 
 @onready var toolButtonPrefab = preload("res://Prefabs/UI/ToolButton.tscn")
 
+@export_category("Nodes")
 @export var pauseMenu: Node
 @export var endScreen: Node
 @export var coinsCounter: Label
 @export var toolsParent: Node
+@export var detonatorUI: Node
 
 func _update_from_gamedata():
 	_update_coin_counter(gameData.collectedItems["Coin"])
@@ -49,9 +51,10 @@ func _setup_tool(toolName: String, toolIcon: Texture):
 	var availabilityFIll: TextureProgressBar = newToolButton.get_node("Availability")
 	availabilityFIll.max_value = gameData.tools[toolName].requiredAvailability
 	newToolButton.get_node("Button").connect("button_up", Callable(get_node("/root/Level/Player/Body"), "use_tool").bind(toolName))
-	newToolButton.get_node("Button").connect("mouse_entered", Callable(self, "tooltipShow").bind(toolName))
-	newToolButton.get_node("Button").connect("mouse_exited", Callable(self, "tooltipHide").bind(toolName))
+	newToolButton.get_node("Button").connect("mouse_entered", Callable(self, "tooltip_visibility").bind(toolName, true))
+	newToolButton.get_node("Button").connect("mouse_exited", Callable(self, "tooltip_visibility").bind(toolName, false))
 	newToolButton.get_node("Tooltip/TooltipText").text = gameData.tools[toolName].description
+	newToolButton.get_node("Tooltip/AvailableText").text = "Available every " + str(gameData.tools[toolName].requiredAvailability) + " new cells"
 	gameData.tools[toolName].button = newToolButton
 	pass
 
@@ -71,10 +74,10 @@ func show_game_result(gameWon: bool):
 	resultLabel.text += "\n\nTotal Coins:\n" + str(gameData.collectedItems["Coin"])
 	pass
 
-func tooltipShow(toolName: String):
-	gameData.tools[toolName].button.get_node("Tooltip").visible = true
+func tooltip_visibility(toolName: String, setVisible: bool):
+	gameData.tools[toolName].button.get_node("Tooltip").visible = setVisible
 	pass
 
-func tooltipHide(toolName: String):
-	gameData.tools[toolName].button.get_node("Tooltip").visible = false
+func detonator_visibility(setVisible: bool):
+	detonatorUI.visible = setVisible
 	pass

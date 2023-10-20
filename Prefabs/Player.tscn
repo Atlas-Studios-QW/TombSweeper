@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://dp4tedtpv3uud"]
+[gd_scene load_steps=8 format=3 uid="uid://dp4tedtpv3uud"]
 
 [ext_resource type="Script" path="res://Scripts/MovementController.gd" id="1_846f4"]
 [ext_resource type="Texture2D" uid="uid://bhlgrmtf46d8t" path="res://Sprites/Character.png" id="2_3dwxy"]
 [ext_resource type="Theme" uid="uid://jsij8ngisnd3" path="res://Themes/UITheme.tres" id="3_ovw3v"]
+[ext_resource type="PackedScene" uid="uid://kqkwigb5o46w" path="res://Prefabs/UI/Overlay.tscn" id="4_qafpq"]
 
 [sub_resource type="Animation" id="Animation_l2tjk"]
 resource_name = "RadarZoom"
@@ -159,3 +160,5 @@ theme = ExtResource("3_ovw3v")
 [node name="CellLabels" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
+
+[node name="Overlay" parent="." instance=ExtResource("4_qafpq")]
