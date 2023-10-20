@@ -1,12 +1,49 @@
-[gd_scene load_steps=5 format=3 uid="uid://dp4tedtpv3uud"]
+[gd_scene load_steps=7 format=3 uid="uid://dp4tedtpv3uud"]
 
 [ext_resource type="Script" path="res://Scripts/MovementController.gd" id="1_846f4"]
 [ext_resource type="Texture2D" uid="uid://bhlgrmtf46d8t" path="res://Sprites/Character.png" id="2_3dwxy"]
 [ext_resource type="Theme" uid="uid://jsij8ngisnd3" path="res://Themes/UITheme.tres" id="3_ovw3v"]
 
+[sub_resource type="Animation" id="Animation_l2tjk"]
+resource_name = "RadarZoom"
+length = 6.0
+step = 0.25
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body/Camera:zoom:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0),
+"points": PackedFloat32Array(3, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0, 3, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 5.5, 6)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Body/Camera:zoom:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0),
+"points": PackedFloat32Array(3, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0, 3, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 5.5, 6)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wrhud"]
+_data = {
+"RadarZoom": SubResource("Animation_l2tjk")
+}
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_botlt"]
 
 [node name="Player" type="Node2D"]
+
+[node name="PlayerAnimator" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_wrhud")
+}
 
 [node name="Body" type="CharacterBody2D" parent="."]
 script = ExtResource("1_846f4")

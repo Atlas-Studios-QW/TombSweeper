@@ -3,8 +3,9 @@ extends CharacterBody2D
 @onready var overlayHandler = get_node("/root/Overlay")
 @onready var gameData = get_node("/root/GameData")
 
+@onready var animator: AnimationPlayer = get_node("../PlayerAnimator")
 @onready var playerSpeed = gameData.get("playerSpeed")
-@onready var tileMap = get_node("/root/Level/World/RoomsMap")
+@onready var tileMap: TileMap = get_node("/root/Level/World/RoomsMap")
 @onready var moveButtonsParent = get_node("MoveControl")
 @onready var camera: Camera2D = get_node("Camera")
 
@@ -36,7 +37,7 @@ func _process(delta):
 		if (movement != 2.0):
 			movement = 2.0
 			var newCell = !tileMap.exploredCoords.has(tileMap.local_to_map(position))
-			tileMap.on_enter_cell(tileMap.local_to_map(position))
+			var playerWon = tileMap.on_enter_cell(tileMap.local_to_map(position))
 			moveButtonsParent.show()
 			overlayHandler._update_after_move(newCell)
 	pass
@@ -94,7 +95,7 @@ func use_tool(toolName: String):
 		"Radar":
 			if (toolData.availability >= toolData.requiredAvailability):
 				toolData.availability = 0
-				camera.zoom = Vector2(1,1)
-				await get_tree().create_timer(toolData.effectDuration).timeout
-				camera.zoom = Vector2(3,3)
+				animator.play("RadarZoom")
+	
+	overlayHandler._update_from_gamedata()
 	pass

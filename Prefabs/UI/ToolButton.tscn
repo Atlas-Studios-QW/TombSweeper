@@ -41,7 +41,7 @@ max_value = 15.0
 fill_mode = 3
 nine_patch_stretch = true
 texture_progress = ExtResource("2_jeusk")
-tint_progress = Color(0, 1, 0, 0.392157)
+tint_progress = Color(0, 1, 0, 0.784314)
 
 [node name="ToolIcon" type="TextureRect" parent="."]
 layout_mode = 1

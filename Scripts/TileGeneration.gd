@@ -26,8 +26,11 @@ extends TileMap
 
 @onready var rng = RandomNumberGenerator.new()
 
+var cellsToWin: int
+
 func _ready():
 	var mapCoords = calculate_coords(mapSize, borderSize)
+	cellsToWin = mapCoords.size()
 	generate_cells(mapCoords, false)
 	setup_cell_labels(mapCoords)
 	pass
@@ -56,6 +59,7 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 			itemCoords[coords] = "Coin"
 		elif (chance <= difficulty):
 			bombCoords.append(coords)
+			cellsToWin -= 1
 			#tile = "NonEnterable"
 			
 		set_cell(0, coords, 0, roomTiles[tile])
@@ -135,11 +139,11 @@ func on_enter_cell(coords: Vector2i):
 		collectedItems[itemCoords[coords]] += 1
 		itemsMap.set_cell(0, coords, -1)
 		itemCoords.erase(coords)
-	
 	if (bombCoords.has(coords)):
-		print("GAME OVER")
-		print("Total coins: " + str(collectedItems["Coin"]))
+		return false
+	elif (exploredCoords.size() >= cellsToWin):
+		return true
 	else:
 		exploredCoords.append(coords)
 		update_cell_label(coords, true)
-	pass
+	return null
