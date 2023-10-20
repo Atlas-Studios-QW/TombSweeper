@@ -2,7 +2,6 @@ extends CanvasLayer
 
 @onready var sceneManager = get_node("/root/SceneManager")
 @onready var gameData = get_node("/root/GameData")
-@onready var saveData: GameData.SaveData = gameData.saveData
 
 @onready var animator = get_node("OverlayAnimator")
 
@@ -17,6 +16,9 @@ extends CanvasLayer
 
 func overlay_visibility(setVisible: bool):
 	if (setVisible):
+		var tools = toolsParent.get_children()
+		for toolButton in tools:
+			toolsParent.remove_child(toolButton)
 		endScreen.visible = false
 		pauseMenu.visible = false
 		detonatorUI.visible = false
@@ -34,31 +36,30 @@ func end_game():
 	pass
 
 func _update_from_gamedata():
-	_update_coin_counter(saveData.collectedItems["Coin"])
+	_update_coin_counter(gameData.saveData.collectedItems["Coin"])
 	
-	for toolName in saveData.tools:
-		var tool: GameData.Tool = saveData.tools[toolName]
+	for toolName in gameData.saveData.tools:
+		var tool: GameData.Tool = gameData.saveData.tools[toolName]
 		if (tool.button != null):
 			_update_tool_button(toolName, tool.availability)
 	pass
 
 func _update_after_move(unexploredCell: bool):
 	if (unexploredCell):
-		for toolName in saveData.tools:
-			saveData.tools[toolName].availability += 1
-	
+		for toolName in gameData.saveData.tools:
+			if (gameData.saveData.tools[toolName].collected):
+				gameData.saveData.tools[toolName].availability += 1
 	_update_from_gamedata()
 	pass
 
 func _update_coin_counter(newAmount: int):
-	var newText = str(newAmount)
-	if (newText != coinsCounter.text):
+	if (newAmount > (coinsCounter.text as int)):
 		animator.play("CoinCollected")
-	coinsCounter.text = newText
+	coinsCounter.text = str(newAmount)
 	pass
 
 func _setup_tool(toolName: String, toolIcon: Texture):
-	if (saveData.tools[toolName].button != null):
+	if (gameData.saveData.tools[toolName].button != null):
 		return
 	
 	toolsParent.add_child(toolButtonPrefab.instantiate())
@@ -66,17 +67,17 @@ func _setup_tool(toolName: String, toolIcon: Texture):
 	newToolButton.get_node("ToolName").text = toolName
 	newToolButton.get_node("ToolIcon").texture = toolIcon
 	var availabilityFIll: TextureProgressBar = newToolButton.get_node("Availability")
-	availabilityFIll.max_value = saveData.tools[toolName].requiredAvailability
+	availabilityFIll.max_value = gameData.saveData.tools[toolName].requiredAvailability
 	newToolButton.get_node("Button").connect("button_up", Callable(get_node("/root/Level/Player/Body"), "use_tool").bind(toolName))
 	newToolButton.get_node("Button").connect("mouse_entered", Callable(self, "tooltip_visibility").bind(toolName, true))
 	newToolButton.get_node("Button").connect("mouse_exited", Callable(self, "tooltip_visibility").bind(toolName, false))
-	newToolButton.get_node("Tooltip/TooltipText").text = saveData.tools[toolName].description
-	newToolButton.get_node("Tooltip/AvailableText").text = "Available every " + str(saveData.tools[toolName].requiredAvailability) + " new cells"
-	saveData.tools[toolName].button = newToolButton
+	newToolButton.get_node("Tooltip/TooltipText").text = gameData.saveData.tools[toolName].description
+	newToolButton.get_node("Tooltip/AvailableText").text = "Available every " + str(gameData.saveData.tools[toolName].requiredAvailability) + " new cells"
+	gameData.saveData.tools[toolName].button = newToolButton
 	pass
 
 func _update_tool_button(toolName: String, newProgress: float):
-	saveData.tools[toolName].button.get_node("Availability").value = newProgress
+	gameData.saveData.tools[toolName].button.get_node("Availability").value = newProgress
 	pass
 
 func show_game_result(gameWon: bool):
@@ -88,11 +89,11 @@ func show_game_result(gameWon: bool):
 	else:
 		resultLabel.text = "You Lost"
 	
-	resultLabel.text += "\n\nTotal Coins:\n" + str(saveData.collectedItems["Coin"])
+	resultLabel.text += "\n\nTotal Coins:\n" + str(gameData.saveData.collectedItems["Coin"])
 	pass
 
 func tooltip_visibility(toolName: String, setVisible: bool):
-	saveData.tools[toolName].button.get_node("Tooltip").visible = setVisible
+	gameData.saveData.tools[toolName].button.get_node("Tooltip").visible = setVisible
 	pass
 
 func detonator_visibility(setVisible: bool):

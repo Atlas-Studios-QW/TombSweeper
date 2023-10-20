@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bj4dm0lpg5yh1"]
 
-[ext_resource type="TileSet" uid="uid://bara7vqr2xjdb" path="res://Tilesets/TileSet.tres" id="1_g422t"]
+[ext_resource type="TileSet" uid="uid://bara7vqr2xjdb" path="res://TileSets/TileSet.tres" id="1_g422t"]
 [ext_resource type="Script" path="res://Scripts/TileGeneration.gd" id="2_xq52i"]
 [ext_resource type="PackedScene" uid="uid://dp4tedtpv3uud" path="res://Prefabs/Player.tscn" id="3_5rr3l"]
 

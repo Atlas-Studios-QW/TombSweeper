@@ -2,7 +2,6 @@ extends CharacterBody2D
 
 @onready var overlayHandler = get_node("/root/Overlay")
 @onready var gameData = get_node("/root/GameData")
-@onready var saveData: GameData.SaveData = gameData.saveData
 
 @onready var animator: AnimationPlayer = get_node("../PlayerAnimator")
 @onready var playerSpeed = gameData.playerSpeed
@@ -41,7 +40,7 @@ func _process(delta):
 	else:
 		if (movement != 2.0):
 			movement = 2.0
-			var newCell = !saveData.exploredCoords.has(tileMap.local_to_map(position))
+			var newCell = !gameData.saveData.exploredCoords.has(tileMap.local_to_map(position))
 			var moveResult = tileMap.on_enter_cell(tileMap.local_to_map(position))
 			if (moveResult != null):
 				overlayHandler.show_game_result(moveResult)
@@ -100,12 +99,12 @@ func check_valid_move(coords: Vector2i):
 		return false
 	if (!tileMap.check_bounds(coords)):
 		return false
-	if (saveData.flagCoords.has(coords)):
+	if (gameData.saveData.flagCoords.has(coords)):
 		return false
 	return true
 
 func use_tool(toolName: String):
-	var toolData: GameData.Tool = saveData.tools[toolName]
+	var toolData: GameData.Tool = gameData.saveData.tools[toolName]
 	if (toolData.availability < toolData.requiredAvailability):
 		return
 	
@@ -124,14 +123,14 @@ func use_tool(toolName: String):
 func finish_detonator(direction: int):
 	var neighbor = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
 	tileMap.update_cell_label(neighbor, false)
-	if (gameData.bombCoords.has(neighbor)):
-		gameData.bombCoords.erase(neighbor)
+	if (gameData.saveData.bombCoords.has(neighbor)):
+		gameData.saveData.bombCoords.erase(neighbor)
 		tileMap.cellsToWin += 1
 		var localCells = tileMap.get_surrounding_cells(neighbor)
-		if (tileMap.flagCoords.has(neighbor)):
-			tileMap.flagCoords.erase(neighbor)
+		if (gameData.saveData.flagCoords.has(neighbor)):
+			gameData.saveData.flagCoords.erase(neighbor)
 		for cellCoords in localCells:
-			if (tileMap.exploredCoords.has(cellCoords) && tileMap.check_bounds(cellCoords)):
+			if (gameData.saveData.exploredCoords.has(cellCoords) && tileMap.check_bounds(cellCoords)):
 				tileMap.update_cell_label(cellCoords, false)
 	
 	overlayHandler.detonator_visibility(false)

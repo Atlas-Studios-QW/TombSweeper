@@ -8,7 +8,6 @@ extends TileMap
 @export var spawnPoint = Vector2i(5,5)
 
 @onready var gameData = get_node("/root/GameData");
-@onready var saveData: GameData.SaveData = gameData.saveData
 
 @onready var neighborDirectionIds = gameData.get("neighborDirectionIds")
 @onready var roomTiles = gameData.roomTiles
@@ -24,7 +23,7 @@ extends TileMap
 var cellsToWin: int
 
 func _ready():
-	var mapCoords = calculate_coords(saveData.mapSize, borderSize)
+	var mapCoords = calculate_coords(gameData.saveData.mapSize, borderSize)
 	cellsToWin = mapCoords.size()
 	generate_cells(mapCoords, false)
 	setup_cell_labels(mapCoords)
@@ -48,34 +47,34 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 		
 		var chance = rng.randf_range(0.0,100.0)
 		if (!check_bounds(coords)):
-			saveData.exploredCoords.append(coords)
+			gameData.saveData.exploredCoords.append(coords)
 			tile = "NonEnterable"
-		elif (chance <= saveData.difficulty * 0.1):
-			saveData.itemCoords[coords] = "Coin"
-		elif (chance <= saveData.difficulty):
-			saveData.bombCoords.append(coords)
+		elif (chance <= gameData.saveData.difficulty * 0.1):
+			gameData.saveData.itemCoords[coords] = "Coin"
+		elif (chance <= gameData.saveData.difficulty):
+			gameData.saveData.bombCoords.append(coords)
 			cellsToWin -= 1
 			#tile = "NonEnterable"
 			
 		set_cell(0, coords, 0, roomTiles[tile])
 	
-	print (saveData.itemCoords)
+	print (gameData.saveData.itemCoords)
 	pass
 
-func check_bounds(coords: Vector2i, size: Vector2i = saveData.mapSize):
+func check_bounds(coords: Vector2i, size: Vector2i = gameData.saveData.mapSize):
 	var outBounds = coords[0] > size[0] or coords[0] < 0 or coords[1] > size[1] or coords[1] < 0
 	return !outBounds
 
 func set_flag(coords: Vector2i):
-	if (saveData.exploredCoords.has(coords)):
+	if (gameData.saveData.exploredCoords.has(coords)):
 		return
 	
-	if (saveData.flagCoords.has(coords)):
+	if (gameData.saveData.flagCoords.has(coords)):
 		itemsMap.set_cell(0, coords)
-		saveData.flagCoords.erase(coords)
+		gameData.saveData.flagCoords.erase(coords)
 	else:
 		itemsMap.set_cell(0, coords, 1, itemTiles["Flag"])
-		saveData.flagCoords.append(coords)
+		gameData.saveData.flagCoords.append(coords)
 	pass
 
 func setup_cell_labels(coordsList: Array):
@@ -84,28 +83,28 @@ func setup_cell_labels(coordsList: Array):
 		var newCellLabel = cellLabelsParent.get_child(cellLabelsParent.get_child_count() - 1)
 		var globalLocation = map_to_local(coords)
 		newCellLabel.position = globalLocation - Vector2(128,128)
-		saveData.cellLabels[coords] = newCellLabel
+		gameData.saveData.cellLabels[coords] = newCellLabel
 	pass
 
 func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
-	if (saveData.itemCoords.has(coords)):
-		itemsMap.set_cell(0, coords, 1, gameData.itemTiles[saveData.itemCoords[coords]])
+	if (gameData.saveData.itemCoords.has(coords)):
+		itemsMap.set_cell(0, coords, 1, gameData.itemTiles[gameData.saveData.itemCoords[coords]])
 	
-	if (saveData.flagCoords.has(coords)):
+	if (gameData.saveData.flagCoords.has(coords)):
 		itemsMap.set_cell(0, coords)
 		
 	set_cell(0, coords, 0, roomTiles["Explored"])
 	
 	var newIndicator = calculate_indicator(coords, false)
 	if (newIndicator != "" or !updateRecursive):
-		saveData.cellLabels[coords].text = newIndicator
+		gameData.saveData.cellLabels[coords].text = newIndicator
 		return
 	
 	var neighbors = get_surrounding_cells(coords)
 	
 	for neighbor in neighbors:
-		if (!saveData.exploredCoords.has(neighbor)):
-			saveData.exploredCoords.append(neighbor)
+		if (!gameData.saveData.exploredCoords.has(neighbor)):
+			gameData.saveData.exploredCoords.append(neighbor)
 			update_cell_label(neighbor, true)
 	pass
 
@@ -114,12 +113,12 @@ func get_neighbor(coords: Vector2i, direction: int = 0):
 	return nextCell
 
 func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
-	if (!saveData.exploredCoords.has(coords) and checkExplored):
+	if (!gameData.saveData.exploredCoords.has(coords) and checkExplored):
 		return ""
 	
 	var surroundingBombs = 0
 	for neighbor in get_surrounding_cells(coords):
-		if (saveData.bombCoords.has(neighbor)):
+		if (gameData.saveData.bombCoords.has(neighbor)):
 			surroundingBombs += 1
 	
 	var indicatorText = ""
@@ -128,18 +127,18 @@ func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	return indicatorText
 
 func on_enter_cell(coords: Vector2i):
-	if (saveData.itemCoords.has(coords)):
-		print("Found item: " + saveData.itemCoords[coords])
-		saveData.collectedItems[saveData.itemCoords[coords]] += 1
+	if (gameData.saveData.itemCoords.has(coords)):
+		print("Found item: " + gameData.saveData.itemCoords[coords])
+		gameData.saveData.collectedItems[gameData.saveData.itemCoords[coords]] += 1
 		itemsMap.set_cell(0, coords, -1)
-		saveData.itemCoords.erase(coords)
-	if (saveData.bombCoords.has(coords)):
+		gameData.saveData.itemCoords.erase(coords)
+	if (gameData.saveData.bombCoords.has(coords)):
 		return false
-	elif (saveData.exploredCoords.size() >= cellsToWin):
+	elif (gameData.saveData.exploredCoords.size() >= cellsToWin):
 		return true
-	elif (!saveData.exploredCoords.has(coords)):
-		saveData.exploredCoords.append(coords)
+	elif (!gameData.saveData.exploredCoords.has(coords)):
+		gameData.saveData.exploredCoords.append(coords)
 		update_cell_label(coords, true)
-		if (saveData.exploredCoords.size() >= cellsToWin):
+		if (gameData.saveData.exploredCoords.size() >= cellsToWin):
 			return true
 	return null
