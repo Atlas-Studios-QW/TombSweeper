@@ -28,9 +28,11 @@ func overlay_visibility(setVisible: bool):
 func _ready():
 	overlay_visibility(false)
 	endScreen.get_node("ReturnButton").connect("button_up", Callable(self, "end_game"))
+	pauseMenu.get_node("MainMenu").connect("button_up", Callable(self, "end_game"))
+	pauseMenu.get_node("Save").connect("button_up", Callable(gameData, "save_progress"))
 	pass
 
-func _unhandled_key_input(event):
+func _unhandled_key_input(_event):
 	if Input.is_key_pressed(KEY_ESCAPE):
 		toggle_pause_menu()
 	pass

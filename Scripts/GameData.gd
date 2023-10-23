@@ -2,7 +2,7 @@ extends Node
 
 @onready var overlayHandler = get_node("/root/Overlay")
 
-@onready var saveData = SaveData.new()
+@onready var saveData: SaveData
 
 var playerSpeed = 4.0
 
@@ -10,8 +10,8 @@ var neighborDirectionIds = [14, 0, 2, 6, 8, 10]
 var canMove = true
 
 class SaveData:
-	var mapSize = Vector2i(10,10)
-	var difficulty = Difficulty.Normal
+	var mapSize: Vector2i
+	var difficulty: Difficulty
 	
 	var itemCoords = {}
 	var flagCoords = []
@@ -30,8 +30,26 @@ class SaveData:
 		"Detonator" = Tool.new("When activated, you can select one cell around you to explode a bomb", 10, 0, null)
 	}
 	
-	func _init():
+	func _init(newMapSize: Vector2i, newDifficulty: Difficulty):
+		mapSize = newMapSize
+		difficulty = newDifficulty
 		pass
+	pass
+
+func save_progress():
+	var resource = Resource.new()
+	
+	resource.save
+	
+	var save_game = FileAccess.open("user://savegame.save", FileAccess.WRITE)
+	var json_string = JSON.stringify(saveData)
+	save_game.store_line(json_string)
+	pass
+
+func load_progress():
+	var save_game = FileAccess.open("user://savegame.save", FileAccess.READ)
+	var json_string = save_game.get_line()
+	saveData = JSON.parse_string(json_string) as SaveData
 	pass
 
 func _get_tool(toolName: String):
