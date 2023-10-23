@@ -30,6 +30,17 @@ func _ready():
 	endScreen.get_node("ReturnButton").connect("button_up", Callable(self, "end_game"))
 	pass
 
+func _unhandled_key_input(event):
+	if Input.is_key_pressed(KEY_ESCAPE):
+		toggle_pause_menu()
+	pass
+
+func toggle_pause_menu():
+	var isVisible = pauseMenu.visible
+	pauseMenu.visible = !isVisible
+	gameData.canMove = isVisible
+	pass
+
 func end_game():
 	overlay_visibility(false)
 	sceneManager.load_scene("MainMenu")

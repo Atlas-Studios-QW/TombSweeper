@@ -50,27 +50,29 @@ func _process(delta):
 	pass
 
 func _input(event):
+	if !(event is InputEventMouseButton and event.pressed):
+		return
+	
 	var mouseDistance = get_global_mouse_position().distance_to(position)
 	var maxDistance: int = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.3
-	
-	if (mouseDistance > maxDistance):
-		return
 	
 	var mouseDirection = get_global_mouse_position().angle_to_point(position)
 	var direction = roundf(rad_to_deg(mouseDirection) / 60 + 4)
 	
 	if (direction > 5):
 		direction = fmod(direction, 6.0)
-
-	if (event is InputEventMouseButton and event.pressed):
-		match event.button_index:
-			MOUSE_BUTTON_LEFT:
-				if (usingDetonator):
-					finish_detonator(direction)
-				else:
-					start_move(direction)
-			MOUSE_BUTTON_RIGHT:
-				set_flag(direction)
+	
+	if (!gameData.canMove):
+		return
+	
+	match event.button_index:
+		MOUSE_BUTTON_LEFT:
+			if (usingDetonator):
+				finish_detonator(direction)
+			elif (mouseDistance < maxDistance):
+				start_move(direction)
+		MOUSE_BUTTON_RIGHT:
+			set_flag()
 	pass
 
 func start_move(direction: int):
@@ -89,14 +91,12 @@ func start_move(direction: int):
 	movement = 0.0
 	pass
 
-func set_flag(direction: int):
-	var nextCoords = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
+func set_flag():
+	var nextCoords = tileMap.local_to_map(get_global_mouse_position())
 	tileMap.set_flag(nextCoords)
 	pass
 
 func check_valid_move(coords: Vector2i):
-	if (!gameData.canMove):
-		return false
 	if (!tileMap.check_bounds(coords)):
 		return false
 	if (gameData.saveData.flagCoords.has(coords)):
@@ -122,7 +122,7 @@ func use_tool(toolName: String):
 
 func finish_detonator(direction: int):
 	var neighbor = tileMap.get_neighbor(tileMap.local_to_map(position), direction)
-	tileMap.update_cell_label(neighbor, false)
+	tileMap.update_cell_label(neighbor, true)
 	if (gameData.saveData.bombCoords.has(neighbor)):
 		gameData.saveData.bombCoords.erase(neighbor)
 		tileMap.cellsToWin += 1
