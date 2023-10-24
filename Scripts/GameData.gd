@@ -12,13 +12,15 @@ var neighborDirectionIds = [14, 0, 2, 6, 8, 10]
 var canMove = true
 
 func save_progress():
-	var result = ResourceSaver.save(saveData, "user://savegame.res")
+	var result = ResourceSaver.save(saveData, "user://savegame.tres")
 	print("Save result:" + str(result))
 	pass
 
 func load_progress():
-	var data = load("user://savegame.res")
+	saveData = SaveData.new(Vector2i(10,10), SaveData.Difficulty.Normal)
+	var data = ResourceLoader.load("user://savegame.tres", "SaveData").duplicate(true)
 	print("Loaded: " + str(data))
+	saveData = data as SaveData
 	pass
 
 func _get_tool(toolName: String):

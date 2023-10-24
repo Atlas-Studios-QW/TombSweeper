@@ -16,7 +16,7 @@ func _ready():
 	startButton.connect("button_up", Callable(self, "start_game"))
 	quitButton.connect("button_up", Callable(self, "quit"))
 	
-	if ResourceLoader.exists("user://savegame.res"):
+	if ResourceLoader.exists("user://savegame.tres", "SaveData"):
 		loadButton.visible = true
 		loadButton.connect("button_up", Callable(self, "load_game"))
 	else:
