@@ -52,7 +52,7 @@ func _update_from_gamedata():
 	_update_coin_counter(gameData.saveData.collectedItems["Coin"])
 	
 	for toolName in gameData.saveData.tools:
-		var tool: GameData.Tool = gameData.saveData.tools[toolName]
+		var tool: SaveData.Tool = gameData.saveData.tools[toolName]
 		if (tool.button != null):
 			_update_tool_button(toolName, tool.availability)
 	pass

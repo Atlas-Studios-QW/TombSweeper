@@ -104,7 +104,7 @@ func check_valid_move(coords: Vector2i):
 	return true
 
 func use_tool(toolName: String):
-	var toolData: GameData.Tool = gameData.saveData.tools[toolName]
+	var toolData: SaveData.Tool = gameData.saveData.tools[toolName]
 	if (toolData.availability < toolData.requiredAvailability):
 		return
 	

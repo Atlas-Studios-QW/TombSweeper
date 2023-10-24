@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://bj4dm0lpg5yh1"]
+
+[ext_resource type="TileSet" uid="uid://bara7vqr2xjdb" path="res://Tilesets/TileSet.tres" id="1_g422t"]
+[ext_resource type="Script" path="res://Scripts/TileGeneration.gd" id="2_xq52i"]
+[ext_resource type="PackedScene" uid="uid://dp4tedtpv3uud" path="res://Prefabs/Player.tscn" id="3_5rr3l"]
+
+[node name="Level" type="Node2D"]
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="RoomsMap" type="TileMap" parent="World" node_paths=PackedStringArray("itemsMap")]
+tile_set = ExtResource("1_g422t")
+format = 2
+layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
+script = ExtResource("2_xq52i")
+itemsMap = NodePath("../ItemsMap")
+borderSize = 2
+
+[node name="CellLabels" type="Control" parent="World/RoomsMap"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="ItemsMap" type="TileMap" parent="World"]
+tile_set = ExtResource("1_g422t")
+format = 2
+layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
+
+[node name="Player" parent="." instance=ExtResource("3_5rr3l")]

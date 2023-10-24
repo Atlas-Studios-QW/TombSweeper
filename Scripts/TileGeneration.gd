@@ -7,7 +7,7 @@ extends TileMap
 @export var borderSize: int = 4
 @export var spawnPoint = Vector2i(5,5)
 
-@onready var gameData = get_node("/root/GameData");
+@onready var gameData: GameData = get_node("/root/GameData");
 
 @onready var neighborDirectionIds = gameData.get("neighborDirectionIds")
 @onready var roomTiles = gameData.roomTiles
@@ -25,8 +25,15 @@ var cellsToWin: int
 func _ready():
 	var mapCoords = calculate_coords(gameData.saveData.mapSize, borderSize)
 	cellsToWin = mapCoords.size()
-	generate_cells(mapCoords, false)
 	setup_cell_labels(mapCoords)
+	
+	if (gameData.loadSave):
+		print("Loading savedata")
+		for cell in gameData.saveData.exploredCoords:
+			if (check_bounds(cell, gameData.saveData.mapSize)):
+				update_cell_label(cell)
+	
+	generate_cells(mapCoords, false, gameData.loadSave)
 	pass
 
 func calculate_coords(size, border: int = 0):
@@ -38,7 +45,7 @@ func calculate_coords(size, border: int = 0):
 			
 	return calculatedCoords
 
-func generate_cells(coordsList: Array, allowOverwrite: bool = true):
+func generate_cells(coordsList: Array, allowOverwrite: bool = true, fromSaveData: bool = false):
 	for coords in coordsList:
 		if (!allowOverwrite and get_cell_tile_data(0, coords) != null):
 			continue
@@ -49,13 +56,17 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true):
 		if (!check_bounds(coords)):
 			gameData.saveData.exploredCoords.append(coords)
 			tile = "NonEnterable"
-		elif (chance <= gameData.saveData.difficulty * 0.1):
+		elif (chance <= gameData.saveData.difficulty * 0.1 && !fromSaveData):
 			gameData.saveData.itemCoords[coords] = "Coin"
-		elif (chance <= gameData.saveData.difficulty):
+		elif (chance <= gameData.saveData.difficulty && !fromSaveData):
 			gameData.saveData.bombCoords.append(coords)
 			cellsToWin -= 1
 			#tile = "NonEnterable"
-			
+		
+		if (fromSaveData):
+			for flag in gameData.saveData.flagCoords:
+				itemsMap.set_cell(0, flag, 1, gameData.itemTiles["Flag"])
+		
 		set_cell(0, coords, 0, roomTiles[tile])
 	
 	print (gameData.saveData.itemCoords)
