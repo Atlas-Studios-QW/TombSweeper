@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @onready var overlayHandler = get_node("/root/Overlay")
-@onready var gameData = get_node("/root/GameData")
+@onready var gameData: GameData = get_node("/root/GameData")
 
 @onready var animator: AnimationPlayer = get_node("../PlayerAnimator")
 @onready var playerSpeed = gameData.playerSpeed
@@ -19,7 +19,10 @@ var usingDetonator = false
 
 func _ready():
 	var spawnPoint = tileMap.spawnPoint
-	position = tileMap.map_to_local(spawnPoint)
+	if (gameData.loadSave):
+		position = gameData.saveData.playerPosition
+	else:
+		position = tileMap.map_to_local(spawnPoint)
 	
 	fromPosition = position
 	nextPosition = position
@@ -28,8 +31,13 @@ func _ready():
 	
 	gameData.canMove = true
 	
-	gameData._get_tool("Radar")
-	gameData._get_tool("Detonator")
+	if (gameData.loadSave):
+		for tool in gameData.saveData.collectedTools:
+			gameData._get_tool(tool, gameData.saveData.collectedTools[tool])
+	else:
+		print("New Game")
+		gameData._get_tool("Radar")
+		gameData._get_tool("Detonator")
 	pass
 
 func _process(delta):
@@ -38,13 +46,16 @@ func _process(delta):
 		movement = minf(movement,1.0)
 		position = fromPosition.lerp(nextPosition, movement)
 	else:
-		if (movement != 2.0):
-			movement = 2.0
-			var newCell = !gameData.saveData.exploredCoords.has(tileMap.local_to_map(position))
-			var moveResult = tileMap.on_enter_cell(tileMap.local_to_map(position))
-			if (moveResult != null):
-				overlayHandler.show_game_result(moveResult)
-				return
+		if (movement == 2.0):
+			return
+		
+		movement = 2.0
+		gameData.saveData.playerPosition = position
+		var newCell = !gameData.saveData.exploredCoords.has(tileMap.local_to_map(position))
+		var moveResult = tileMap.on_enter_cell(tileMap.local_to_map(position))
+		if (moveResult != null):
+			overlayHandler.show_game_result(moveResult)
+		else:
 			moveButtonsParent.show()
 			overlayHandler._update_after_move(newCell)
 	pass
@@ -104,8 +115,8 @@ func check_valid_move(coords: Vector2i):
 	return true
 
 func use_tool(toolName: String):
-	var toolData: SaveData.Tool = gameData.saveData.tools[toolName]
-	if (toolData.availability < toolData.requiredAvailability):
+	var toolData: GameData.Tool = gameData.tools[toolName]
+	if (gameData.saveData.collectedTools[toolName] < toolData.requiredAvailability):
 		return
 	
 	match toolName:
@@ -116,7 +127,7 @@ func use_tool(toolName: String):
 			overlayHandler.detonator_visibility(true)
 			pass
 	
-	toolData.availability = 0
+	gameData.saveData.collectedTools[toolName] = 0
 	overlayHandler._update_from_gamedata()
 	pass
 

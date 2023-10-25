@@ -24,9 +24,9 @@ func _ready():
 	pass
 
 func start_game():
-	@warning_ignore("narrowing_conversion")
 	gameData.loadSave = false
-	gameData.saveData = SaveData.new(Vector2i(mapSizeX.value, mapSizeY.value), SaveData.Difficulty[difficulty.text])
+	@warning_ignore("narrowing_conversion")
+	gameData.saveData = SavegameData.new(Vector2i(mapSizeX.value, mapSizeY.value), SavegameData.Difficulty[difficulty.text])
 	sceneManager.load_scene("Level")
 	overlayHandler.overlay_visibility(true)
 	pass

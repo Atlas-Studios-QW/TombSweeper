@@ -23,6 +23,7 @@ anchors_preset = 0
 [node name="ItemsMap" type="TileMap" parent="World"]
 tile_set = ExtResource("1_g422t")
 format = 2
+layer_0/name = "Level"
 layer_0/tile_data = PackedInt32Array(327685, 0, 0, 262149, 0, 0, 327684, 0, 0, 393221, 0, 0, 393222, 0, 0, 327686, 0, 0, 262150, 0, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_5rr3l")]

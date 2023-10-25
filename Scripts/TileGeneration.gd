@@ -9,12 +9,9 @@ extends TileMap
 
 @onready var gameData: GameData = get_node("/root/GameData");
 
-@onready var neighborDirectionIds = gameData.get("neighborDirectionIds")
-@onready var roomTiles = gameData.roomTiles
-@onready var itemTiles = gameData.itemTiles
-
 @onready var cellLabelPrefab = preload("res://Prefabs/UI/CellLabel.tscn")
 @onready var cellLabelsParent = get_node("CellLabels")
+var cellLabels = {}
 
 @onready var collectedItems = gameData.get("collectedItems")
 
@@ -29,6 +26,7 @@ func _ready():
 	
 	if (gameData.loadSave):
 		print("Loading savedata")
+		cellsToWin -= gameData.saveData.bombCoords.size()
 		for cell in gameData.saveData.exploredCoords:
 			if (check_bounds(cell, gameData.saveData.mapSize)):
 				update_cell_label(cell)
@@ -54,7 +52,8 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true, fromSaveData
 		
 		var chance = rng.randf_range(0.0,100.0)
 		if (!check_bounds(coords)):
-			gameData.saveData.exploredCoords.append(coords)
+			if (!fromSaveData):
+				gameData.saveData.exploredCoords.append(coords)
 			tile = "NonEnterable"
 		elif (chance <= gameData.saveData.difficulty * 0.1 && !fromSaveData):
 			gameData.saveData.itemCoords[coords] = "Coin"
@@ -67,9 +66,7 @@ func generate_cells(coordsList: Array, allowOverwrite: bool = true, fromSaveData
 			for flag in gameData.saveData.flagCoords:
 				itemsMap.set_cell(0, flag, 1, gameData.itemTiles["Flag"])
 		
-		set_cell(0, coords, 0, roomTiles[tile])
-	
-	print (gameData.saveData.itemCoords)
+		set_cell(0, coords, 0, gameData.roomTiles[tile])
 	pass
 
 func check_bounds(coords: Vector2i, size: Vector2i = gameData.saveData.mapSize):
@@ -84,7 +81,7 @@ func set_flag(coords: Vector2i):
 		itemsMap.set_cell(0, coords)
 		gameData.saveData.flagCoords.erase(coords)
 	else:
-		itemsMap.set_cell(0, coords, 1, itemTiles["Flag"])
+		itemsMap.set_cell(0, coords, 1, gameData.itemTiles["Flag"])
 		gameData.saveData.flagCoords.append(coords)
 	pass
 
@@ -94,21 +91,21 @@ func setup_cell_labels(coordsList: Array):
 		var newCellLabel = cellLabelsParent.get_child(cellLabelsParent.get_child_count() - 1)
 		var globalLocation = map_to_local(coords)
 		newCellLabel.position = globalLocation - Vector2(128,128)
-		gameData.saveData.cellLabels[coords] = newCellLabel
+		cellLabels[coords] = newCellLabel
 	pass
 
-func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
+func update_cell_label(coords: Vector2i, updateRecursive := false):
 	if (gameData.saveData.itemCoords.has(coords)):
 		itemsMap.set_cell(0, coords, 1, gameData.itemTiles[gameData.saveData.itemCoords[coords]])
 	
 	if (gameData.saveData.flagCoords.has(coords)):
 		itemsMap.set_cell(0, coords)
 		
-	set_cell(0, coords, 0, roomTiles["Explored"])
+	set_cell(0, coords, 0, gameData.roomTiles["Explored"])
 	
 	var newIndicator = calculate_indicator(coords, false)
 	if (newIndicator != "" or !updateRecursive):
-		gameData.saveData.cellLabels[coords].text = newIndicator
+		cellLabels[coords].text = newIndicator
 		return
 	
 	var neighbors = get_surrounding_cells(coords)
@@ -120,7 +117,7 @@ func update_cell_label(coords: Vector2i, updateRecursive: bool = false):
 	pass
 
 func get_neighbor(coords: Vector2i, direction: int = 0):
-	var nextCell = get_neighbor_cell(coords, neighborDirectionIds[direction])
+	var nextCell = get_neighbor_cell(coords, gameData.neighborDirectionIds[direction])
 	return nextCell
 
 func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
@@ -138,6 +135,8 @@ func calculate_indicator(coords: Vector2i, checkExplored: bool = true):
 	return indicatorText
 
 func on_enter_cell(coords: Vector2i):
+	print(str(gameData.saveData.exploredCoords.size()) + " >= " + str(cellsToWin))
+	
 	if (gameData.saveData.itemCoords.has(coords)):
 		print("Found item: " + gameData.saveData.itemCoords[coords])
 		gameData.saveData.collectedItems[gameData.saveData.itemCoords[coords]] += 1

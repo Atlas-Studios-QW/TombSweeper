@@ -20,6 +20,8 @@ func load_scene(sceneName: String):
 	pass
 
 func deferred_load_scene(sceneName: String):
+	get_tree().root.remove_child(currentScene)
+	
 	currentScene.free()
 	
 	var newScene = ResourceLoader.load(scenes[sceneName])
